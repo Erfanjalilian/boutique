@@ -1,0 +1,25 @@
+[
+  {
+    "id": "order-001",
+    "userId": "user-001",
+    "items": [
+      {
+        "productId": "prod-001",
+        "name": "تی‌شرت نخی کلاسیک",
+        "price": 890000,
+        "image": "/Image/placeholder-product.svg",
+        "size": "M",
+        "color": "مشکی",
+        "quantity": 2
+      }
+    ],
+    "total": 1780000,
+    "status": "Delivered",
+    "fullName": "علی محمدی",
+    "phone": "09121111111",
+    "address": "تهران، خیابان انقلاب، پلاک ۴۵۶",
+    "postalCode": "0987654321",
+    "notes": "",
+    "createdAt": "2025-03-01T10:00:00.000Z"
+  }
+]

@@ -1,0 +1,10 @@
+[
+  { "id": "color-black", "name": "مشکی", "hex": "#000000" },
+  { "id": "color-white", "name": "سفید", "hex": "#FFFFFF" },
+  { "id": "color-navy", "name": "سرمه‌ای", "hex": "#1E3A5F" },
+  { "id": "color-gray", "name": "خاکستری", "hex": "#6B7280" },
+  { "id": "color-red", "name": "قرمز", "hex": "#EF4444" },
+  { "id": "color-blue", "name": "آبی", "hex": "#3B82F6" },
+  { "id": "color-green", "name": "سبز", "hex": "#22C55E" },
+  { "id": "color-beige", "name": "بژ", "hex": "#D4C4A8" }
+]

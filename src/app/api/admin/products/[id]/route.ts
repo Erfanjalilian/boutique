@@ -1,0 +1,60 @@
+import { z } from "zod";
+import { getSession } from "@/lib/auth";
+import { getProducts, saveProducts } from "@/lib/repositories";
+import { apiSuccess, apiError } from "@/utils/api";
+
+const productSchema = z.object({
+  name: z.string().min(1).optional(),
+  description: z.string().optional(),
+  price: z.number().min(0).optional(),
+  images: z.array(z.string()).optional(),
+  categoryId: z.string().optional(),
+  sizes: z.array(z.string()).optional(),
+  colors: z.array(z.string()).optional(),
+  featured: z.boolean().optional(),
+  bestSeller: z.boolean().optional(),
+  newArrival: z.boolean().optional(),
+  stock: z.number().min(0).optional(),
+});
+
+async function requireAdmin() {
+  const session = await getSession();
+  if (!session || session.role !== "admin") return null;
+  return session;
+}
+
+export async function PUT(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  if (!(await requireAdmin())) return apiError("Unauthorized", 401);
+
+  const { id } = await params;
+  const body = await request.json();
+  const parsed = productSchema.safeParse(body);
+  if (!parsed.success) return apiError(parsed.error.issues[0].message);
+
+  const products = await getProducts();
+  const idx = products.findIndex((p) => p.id === id);
+  if (idx === -1) return apiError("Product not found", 404);
+
+  products[idx] = { ...products[idx], ...parsed.data };
+  await saveProducts(products);
+  return apiSuccess(products[idx]);
+}
+
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  if (!(await requireAdmin())) return apiError("Unauthorized", 401);
+
+  const { id } = await params;
+  const products = await getProducts();
+  const filtered = products.filter((p) => p.id !== id);
+  if (filtered.length === products.length) {
+    return apiError("Product not found", 404);
+  }
+  await saveProducts(filtered);
+  return apiSuccess({ message: "Product deleted" });
+}

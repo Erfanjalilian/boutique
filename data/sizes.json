@@ -1,0 +1,8 @@
+[
+  { "id": "size-xs", "name": "XS" },
+  { "id": "size-s", "name": "S" },
+  { "id": "size-m", "name": "M" },
+  { "id": "size-l", "name": "L" },
+  { "id": "size-xl", "name": "XL" },
+  { "id": "size-xxl", "name": "XXL" }
+]

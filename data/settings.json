@@ -1,0 +1,14 @@
+{
+  "websiteName": "بوتیک",
+  "metaTitle": "بوتیک - فروشگاه پوشاک لوکس",
+  "metaDescription": "جدیدترین مدل‌های پوشاک و اکسسوری را در بوتیک کشف کنید. خرید آنلاین با ارسال سریع.",
+  "favicon": "/Image/logo.svg",
+  "logo": "/Image/logo.svg",
+  "footerText": "© ۱۴۰۴ بوتیک. تمامی حقوق محفوظ است. مد و زیبایی برای سبک زندگی مدرن.",
+  "footerLinks": [
+    { "label": "درباره ما", "href": "/about" },
+    { "label": "تماس با ما", "href": "/contact" },
+    { "label": "حریم خصوصی", "href": "/privacy" },
+    { "label": "قوانین و مقررات", "href": "/terms" }
+  ]
+}
