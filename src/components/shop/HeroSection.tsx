@@ -16,8 +16,9 @@ export function HeroSection() {
             <span className="text-primary"> ارتقا دهید</span>
           </h1>
           <p className="text-lg text-muted mb-8 leading-relaxed">
-            پوشاک مرغوب برای کسانی که به کیفیت، راحتی و طراحی جاودانه اهمیت می‌دهند.
-            همین امروز جدیدترین ترندها را کشف کنید.
+            اصالت و شرافت دنیای مجازی و حقیقی ندارد ، اصیل و شریف باشیم .
+
+
           </p>
           <div className="flex flex-wrap gap-4">
             <Link href="/products">

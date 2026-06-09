@@ -7,8 +7,7 @@ interface FooterProps {
 }
 
 export function Footer({
-  websiteName = "بوتیک",
-  footerText = "© ۱۴۰۴ بوتیک. تمامی حقوق محفوظ است.",
+  
   footerLinks = [],
 }: FooterProps) {
   return (
@@ -16,10 +15,9 @@ export function Footer({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-lg font-bold mb-3">{websiteName}</h3>
+            <h3 className="text-lg font-bold mb-3">ساعتکده آریامهر</h3>
             <p className="text-sm text-muted leading-relaxed">
-              مد و زیبایی برای سبک زندگی مدرن. مجموعه‌ای منتخب از بهترین پوشاک
-              با ترکیب ظرافت کلاسیک و سبک معاصر.
+              اصالت و شرافت دنیای مجازی و حقیقی ندارد ، اصیل و شریف باشیم .
             </p>
           </div>
           <div>
@@ -58,7 +56,7 @@ export function Footer({
           </div>
         </div>
         <div className="mt-8 pt-8 border-t border-border/50 text-center text-sm text-muted">
-          {footerText}
+          طراحی شده توسط عرفان جلیلیان
         </div>
       </div>
     </footer>

@@ -91,43 +91,9 @@ export function ProductDetailClient({
           <p className="text-muted leading-relaxed mb-8">{product.description}</p>
 
           <div className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-muted mb-3">سایز</label>
-              <div className="flex flex-wrap gap-2">
-                {productSizes.map((size) => (
-                  <button
-                    key={size.id}
-                    onClick={() => setSelectedSize(size.id)}
-                    className={`px-4 py-2 rounded-xl border text-sm transition-all ${
-                      selectedSize === size.id
-                        ? "border-primary bg-primary/20 text-primary"
-                        : "border-border hover:border-primary/50"
-                    }`}
-                  >
-                    {size.name}
-                  </button>
-                ))}
-              </div>
-            </div>
+         
 
-            <div>
-              <label className="block text-sm font-medium text-muted mb-3">رنگ</label>
-              <div className="flex flex-wrap gap-3">
-                {productColors.map((color) => (
-                  <button
-                    key={color.id}
-                    onClick={() => setSelectedColor(color.id)}
-                    title={color.name}
-                    className={`w-10 h-10 rounded-full border-2 transition-all ${
-                      selectedColor === color.id
-                        ? "border-primary ring-2 ring-primary/30"
-                        : "border-border"
-                    }`}
-                    style={{ backgroundColor: color.hex }}
-                  />
-                ))}
-              </div>
-            </div>
+          
 
             <div>
               <label className="block text-sm font-medium text-muted mb-3">تعداد</label>

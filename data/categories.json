@@ -1,32 +1,32 @@
 [
   {
     "id": "cat-001",
-    "name": "تی‌شرت",
+    "name": "دسته بندی ۱",
     "slug": "t-shirt",
-    "image": "/Image/fd91b2b8a0f76a837e336a8f9df2d25adf5373fe_1778413630.webp"
+    "image": "/Image/ساعت ۵.jpg"
   },
   {
     "id": "cat-002",
-    "name": "شلوار جین",
+    "name": "دسته بندی ۲",
     "slug": "jeans",
-    "image": "/Image/ef56e31af8e1535e270bfbbb855959fc0aed2d12_1779528237.webp"
+    "image": "/Image/ساعت ۸.jpg"
   },
   {
     "id": "cat-003",
-    "name": "پیراهن",
+    "name": "دسته بندی ۳",
     "slug": "dresses",
-    "image": "/Image/e4d02420a4f319dad32fadb0fa8f8aac5e48f9da_1779527551.webp"
+    "image": "/Image/ساعت۱.jpg"
   },
   {
     "id": "cat-004",
-    "name": "کاپشن",
+    "name": "دسته بندی ۴",
     "slug": "jackets",
-    "image": "/Image/d0cceaeec97bca20328bce6fc061f3999c8b87e9_1778597789.webp"
+    "image": "/Image/ساعت۲.jpg"
   },
   {
     "id": "cat-005",
-    "name": "اکسسوری",
+    "name": "دسته بندی ۵",
     "slug": "accessories",
-    "image": "/Image/0963c8c6c123abcac3a1c8fd7620f1d19273392e_1778510161.webp"
+    "image": "/Image/ساعت۳.jpg"
   }
 ]
