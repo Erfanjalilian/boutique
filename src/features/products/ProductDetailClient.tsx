@@ -6,44 +6,30 @@ import { useCart } from "@/hooks/useCart";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import { Button } from "@/components/ui/Button";
 import { formatPrice } from "@/utils/helpers";
-import type { Product, Category, Size, Color } from "@/types";
+import type { Product, Category } from "@/types";
 
 export function ProductDetailClient({
   product,
   related,
   categories,
-  sizes,
-  colors,
 }: {
   product: Product;
   related: Product[];
   categories: Category[];
-  sizes: Size[];
-  colors: Color[];
 }) {
   const { addItem } = useCart();
   const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedSize, setSelectedSize] = useState("");
-  const [selectedColor, setSelectedColor] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
 
-  const productSizes = sizes.filter((s) => product.sizes.includes(s.id));
-  const productColors = colors.filter((c) => product.colors.includes(c.id));
   const category = categories.find((c) => c.id === product.categoryId);
 
   function handleAddToCart() {
-    if (!selectedSize || !selectedColor) return;
-    const sizeName = productSizes.find((s) => s.id === selectedSize)?.name || selectedSize;
-    const colorName = productColors.find((c) => c.id === selectedColor)?.name || selectedColor;
-
     addItem({
       productId: product.id,
       name: product.name,
       price: product.price,
       image: product.images[0] || "/Image/placeholder-product.svg",
-      size: sizeName,
-      color: colorName,
       quantity,
     });
     setAdded(true);
@@ -53,6 +39,7 @@ export function ProductDetailClient({
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        {/* Image Gallery */}
         <div>
           <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-card border border-border/50">
             <Image
@@ -80,6 +67,7 @@ export function ProductDetailClient({
           )}
         </div>
 
+        {/* Product Info */}
         <div className="animate-fade-in">
           {category && (
             <p className="text-sm text-primary font-medium mb-2">{category.name}</p>
@@ -90,11 +78,8 @@ export function ProductDetailClient({
           </p>
           <p className="text-muted leading-relaxed mb-8">{product.description}</p>
 
+          {/* Quantity Selector */}
           <div className="space-y-6">
-         
-
-          
-
             <div>
               <label className="block text-sm font-medium text-muted mb-3">تعداد</label>
               <div className="flex items-center gap-3">
@@ -114,18 +99,15 @@ export function ProductDetailClient({
               </div>
             </div>
 
-            <Button
-              size="lg"
-              className="w-full"
-              onClick={handleAddToCart}
-              disabled={!selectedSize || !selectedColor}
-            >
+            {/* Add to Cart Button */}
+            <Button size="lg" className="w-full" onClick={handleAddToCart}>
               {added ? "به سبد اضافه شد ✓" : "افزودن به سبد خرید"}
             </Button>
           </div>
         </div>
       </div>
 
+      {/* Related Products */}
       {related.length > 0 && (
         <div className="mt-16">
           <ProductGrid products={related} title="محصولات مرتبط" />

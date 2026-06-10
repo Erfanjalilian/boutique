@@ -1,32 +1,44 @@
 [
   {
     "id": "cat-001",
-    "name": "دسته بندی ۱",
-    "slug": "t-shirt",
-    "image": "/Image/ساعت ۵.jpg"
+    "name": "جواهرات مردانه",
+    "slug": "mens-jewelry",
+    "image": "/Image/جواهر مردانه.jpg"
   },
   {
     "id": "cat-002",
-    "name": "دسته بندی ۲",
-    "slug": "jeans",
-    "image": "/Image/ساعت ۸.jpg"
+    "name": "دستبند",
+    "slug": "bracelets",
+    "image": "/Image/دستبند دخترانه.jpg"
   },
   {
     "id": "cat-003",
-    "name": "دسته بندی ۳",
-    "slug": "dresses",
-    "image": "/Image/ساعت۱.jpg"
+    "name": "انگشتر",
+    "slug": "rings",
+    "image": "/Image/انگشتر.jpg"
   },
   {
     "id": "cat-004",
-    "name": "دسته بندی ۴",
-    "slug": "jackets",
-    "image": "/Image/ساعت۲.jpg"
+    "name": "پابند",
+    "slug": "anklets",
+    "image": "/Image/پابنده زنانه.jpg"
   },
   {
     "id": "cat-005",
-    "name": "دسته بندی ۵",
-    "slug": "accessories",
-    "image": "/Image/ساعت۳.jpg"
+    "name": "پلاک نام",
+    "slug": "nameplates",
+    "image": "/Image/باکس هدیه.jpg"
+  },
+  {
+    "id": "cat-006",
+    "name": "پاندول ساعتی",
+    "slug": "watch-pendants",
+    "image": "/Image/ساعت۱.jpg"
+  },
+  {
+    "id": "cat-007",
+    "name": "باکس هدیه",
+    "slug": "gift-boxes",
+    "image": "/Image/باکس هدیه.jpg"
   }
 ]

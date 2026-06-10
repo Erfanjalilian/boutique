@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { Input } from "@/components/ui/Input";
@@ -19,12 +19,23 @@ export function ProductsClient({
   categories: Category[];
 }) {
   const searchParams = useSearchParams();
+  
+  // Read category from URL query parameter on initial load
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState(searchParams.get("category") || "");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [sort, setSort] = useState("newest");
   const [page, setPage] = useState(1);
+
+  // Sync category state with URL parameter when it changes
+  useEffect(() => {
+    const urlCategory = searchParams.get("category");
+    if (urlCategory && urlCategory !== category) {
+      setCategory(urlCategory);
+      setPage(1);
+    }
+  }, [searchParams, category]);
 
   const filtered = useMemo(() => {
     let result = [...initialProducts];
@@ -72,9 +83,14 @@ export function ProductsClient({
     page * ITEMS_PER_PAGE
   );
 
+  // Find the selected category name for display
+  const selectedCategoryName = categories.find((c) => c.id === category)?.name;
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold mb-8">همه محصولات</h1>
+      <h1 className="text-3xl font-bold mb-8">
+        {selectedCategoryName ? `محصولات ${selectedCategoryName}` : "همه محصولات"}
+      </h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         <aside className="space-y-4">

@@ -42,8 +42,8 @@ export interface Product {
   price: number;
   images: string[];
   categoryId: string;
-  sizes: string[];
-  colors: string[];
+  sizes: string[];      // Keep if used elsewhere (e.g., admin panel)
+  colors: string[];     // Keep if used elsewhere (e.g., admin panel)
   featured: boolean;
   bestSeller: boolean;
   newArrival: boolean;
@@ -51,23 +51,21 @@ export interface Product {
   createdAt: string;
 }
 
+// Updated: Removed size and color
 export interface CartItem {
   productId: string;
   name: string;
   price: number;
   image: string;
-  size: string;
-  color: string;
   quantity: number;
 }
 
+// Updated: Removed size and color
 export interface OrderItem {
   productId: string;
   name: string;
   price: number;
   image: string;
-  size: string;
-  color: string;
   quantity: number;
 }
 

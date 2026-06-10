@@ -13,13 +13,8 @@ import type { CartItem } from "@/types";
 interface CartContextType {
   items: CartItem[];
   addItem: (item: CartItem) => void;
-  removeItem: (productId: string, size: string, color: string) => void;
-  updateQuantity: (
-    productId: string,
-    size: string,
-    color: string,
-    quantity: number
-  ) => void;
+  removeItem: (productId: string) => void;
+  updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
   totalItems: number;
   totalPrice: number;
@@ -33,16 +28,27 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [loaded, setLoaded] = useState(false);
 
+  // Load cart from localStorage
   useEffect(() => {
     try {
       const stored = localStorage.getItem(CART_KEY);
-      if (stored) setItems(JSON.parse(stored));
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        // Migrate old cart items (remove size/color if present)
+        if (Array.isArray(parsed) && parsed.length > 0 && (parsed[0].size !== undefined || parsed[0].color !== undefined)) {
+          const migrated = parsed.map(({ size, color, ...rest }: any) => rest);
+          setItems(migrated);
+        } else {
+          setItems(parsed);
+        }
+      }
     } catch {
       // ignore
     }
     setLoaded(true);
   }, []);
 
+  // Save cart to localStorage
   useEffect(() => {
     if (loaded) {
       localStorage.setItem(CART_KEY, JSON.stringify(items));
@@ -52,16 +58,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const addItem = useCallback((item: CartItem) => {
     setItems((prev) => {
       const existing = prev.find(
-        (i) =>
-          i.productId === item.productId &&
-          i.size === item.size &&
-          i.color === item.color
+        (i) => i.productId === item.productId
       );
       if (existing) {
         return prev.map((i) =>
-          i.productId === item.productId &&
-          i.size === item.size &&
-          i.color === item.color
+          i.productId === item.productId
             ? { ...i, quantity: i.quantity + item.quantity }
             : i
         );
@@ -70,33 +71,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const removeItem = useCallback(
-    (productId: string, size: string, color: string) => {
-      setItems((prev) =>
-        prev.filter(
-          (i) =>
-            !(
-              i.productId === productId &&
-              i.size === size &&
-              i.color === color
-            )
-        )
-      );
-    },
-    []
-  );
+  const removeItem = useCallback((productId: string) => {
+    setItems((prev) =>
+      prev.filter((i) => i.productId !== productId)
+    );
+  }, []);
 
   const updateQuantity = useCallback(
-    (productId: string, size: string, color: string, quantity: number) => {
+    (productId: string, quantity: number) => {
       if (quantity <= 0) {
-        removeItem(productId, size, color);
+        removeItem(productId);
         return;
       }
       setItems((prev) =>
         prev.map((i) =>
-          i.productId === productId &&
-          i.size === size &&
-          i.color === color
+          i.productId === productId
             ? { ...i, quantity }
             : i
         )

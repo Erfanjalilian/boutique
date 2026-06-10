@@ -4,8 +4,6 @@ import {
   getProductById,
   getProducts,
   getCategories,
-  getSizes,
-  getColors,
 } from "@/lib/repositories";
 
 export default async function ProductDetailPage({
@@ -17,11 +15,9 @@ export default async function ProductDetailPage({
   const product = await getProductById(id);
   if (!product) notFound();
 
-  const [allProducts, categories, sizes, colors] = await Promise.all([
+  const [allProducts, categories] = await Promise.all([
     getProducts(),
     getCategories(),
-    getSizes(),
-    getColors(),
   ]);
 
   const related = allProducts
@@ -33,8 +29,6 @@ export default async function ProductDetailPage({
       product={product}
       related={related}
       categories={categories}
-      sizes={sizes}
-      colors={colors}
     />
   );
 }
