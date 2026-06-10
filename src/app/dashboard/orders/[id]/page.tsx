@@ -20,11 +20,11 @@ export default async function OrderDetailPage({
   if (!order || order.userId !== session.userId) notFound();
 
   return (
-    <div className="animate-fade-in max-w-2xl">
+    <div className="animate-fade-in max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <Link href="/dashboard/orders" className="text-sm text-primary hover:underline mb-4 inline-block">
-        → بازگشت به سفارش‌ها
+        ← بازگشت به سفارش‌ها
       </Link>
-      <h1 className="text-2xl font-bold mb-6">جزئیات سفارش</h1>
+      <h1 className="text-3xl font-bold mb-6">جزئیات سفارش</h1>
 
       <Card className="p-6 space-y-6">
         <div className="flex justify-between items-start">
@@ -40,15 +40,22 @@ export default async function OrderDetailPage({
           <p>{formatDate(order.createdAt)}</p>
         </div>
 
+        {/* Order Items - FIXED: Removed size and color */}
         <div>
           <p className="text-sm text-muted mb-2">اقلام</p>
           <div className="space-y-2">
             {order.items.map((item, i) => (
-              <div key={i} className="flex justify-between text-sm py-2 border-b border-border/30 last:border-0">
-                <span>
-                  {item.name} ({item.size}، {item.color}) × {item.quantity}
+              <div 
+                key={i} 
+                className="flex justify-between items-center text-sm py-2 border-b border-border/30 last:border-0"
+              >
+                <div>
+                  <span className="font-medium">{item.name}</span>
+                  <span className="text-muted mr-2">× {item.quantity}</span>
+                </div>
+                <span className="font-semibold text-primary">
+                  {formatPrice(item.price * item.quantity)}
                 </span>
-                <span>{formatPrice(item.price * item.quantity)}</span>
               </div>
             ))}
           </div>
@@ -63,11 +70,19 @@ export default async function OrderDetailPage({
 
         <div>
           <p className="text-sm text-muted mb-2">آدرس ارسال</p>
-          <p className="text-sm">{order.fullName}</p>
-          <p className="text-sm text-muted">{order.address}</p>
-          <p className="text-sm text-muted">{order.postalCode}</p>
-          <p className="text-sm text-muted">{order.phone}</p>
+          <p className="text-sm font-medium">{order.fullName}</p>
+          <p className="text-sm text-muted mt-1">{order.address}</p>
+          <p className="text-sm text-muted mt-1">کد پستی: {order.postalCode}</p>
+          <p className="text-sm text-muted mt-1">شماره تماس: {order.phone}</p>
         </div>
+        
+        {/* Notes */}
+        {order.notes && (
+          <div>
+            <p className="text-sm text-muted mb-2">یادداشت</p>
+            <p className="text-sm">{order.notes}</p>
+          </div>
+        )}
       </Card>
     </div>
   );

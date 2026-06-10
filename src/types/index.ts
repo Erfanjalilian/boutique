@@ -61,6 +61,7 @@ export interface CartItem {
 }
 
 // Updated: Removed size and color
+// Updated OrderItem - no size or color
 export interface OrderItem {
   productId: string;
   name: string;

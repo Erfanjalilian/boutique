@@ -32,42 +32,47 @@ export default function CartPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-4">
           {items.map((item) => (
-            <Card key={`${item.productId}-${item.size}-${item.color}`} className="p-4">
+            <Card key={item.productId} className="p-4">
               <div className="flex gap-4">
                 <div className="relative w-24 h-24 rounded-xl overflow-hidden shrink-0 bg-background">
-                  <Image src={item.image} alt={item.name} fill className="object-cover" />
+                  <Image 
+                    src={item.image} 
+                    alt={item.name} 
+                    fill 
+                    className="object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "/Image/placeholder-product.svg";
+                    }}
+                  />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-medium truncate">{item.name}</h3>
-                  <p className="text-sm text-muted mt-1">
-                    {item.size} · {item.color}
-                  </p>
                   <p className="text-primary font-semibold mt-2">
                     {formatPrice(item.price)}
                   </p>
                 </div>
                 <div className="flex flex-col items-end justify-between">
                   <button
-                    onClick={() => removeItem(item.productId, item.size, item.color)}
-                    className="text-muted hover:text-red-400 text-sm"
+                    onClick={() => removeItem(item.productId)}
+                    className="text-muted hover:text-red-400 text-sm transition-colors"
                   >
                     حذف
                   </button>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() =>
-                        updateQuantity(item.productId, item.size, item.color, item.quantity - 1)
+                        updateQuantity(item.productId, item.quantity - 1)
                       }
-                      className="w-8 h-8 rounded-lg border border-border flex items-center justify-center text-sm"
+                      className="w-8 h-8 rounded-lg border border-border flex items-center justify-center text-sm hover:border-primary/50 transition-colors"
                     >
                       −
                     </button>
                     <span className="w-8 text-center text-sm">{item.quantity}</span>
                     <button
                       onClick={() =>
-                        updateQuantity(item.productId, item.size, item.color, item.quantity + 1)
+                        updateQuantity(item.productId, item.quantity + 1)
                       }
-                      className="w-8 h-8 rounded-lg border border-border flex items-center justify-center text-sm"
+                      className="w-8 h-8 rounded-lg border border-border flex items-center justify-center text-sm hover:border-primary/50 transition-colors"
                     >
                       +
                     </button>
