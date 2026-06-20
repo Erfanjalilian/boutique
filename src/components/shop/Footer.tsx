@@ -7,7 +7,6 @@ interface FooterProps {
 }
 
 export function Footer({
-  
   footerLinks = [],
 }: FooterProps) {
   return (
@@ -55,8 +54,34 @@ export function Footer({
             </ul>
           </div>
         </div>
-        <div className="mt-8 pt-8 border-t border-border/50 text-center text-sm text-muted">
-          طراحی شده توسط عرفان جلیلیان
+        
+        {/* بخش پایین فوتر با گزینه ورود ادمین */}
+        <div className="mt-8 pt-8 border-t border-border/50 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-muted">
+          <div>
+            طراحی شده توسط عرفان جلیلیان
+          </div>
+          <div className="flex items-center gap-4">
+            <Link 
+              href="/panel/login"
+              className="px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-all duration-200 text-sm font-medium flex items-center gap-2"
+            >
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                className="h-4 w-4" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" 
+                />
+              </svg>
+              ورود ادمین
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
