@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import "@fontsource/vazirmatn/400.css";
 import "@fontsource/vazirmatn/500.css";
@@ -9,10 +10,16 @@ import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
+
   return {
     title: settings.metaTitle,
     description: settings.metaDescription,
-    icons: { icon: settings.favicon || "/Image/logo.svg" },
+    icons: {
+      icon: settings.favicon || "/Image/logo.svg",
+    },
+    other: {
+      enamad: "258664399",
+    },
   };
 }
 
@@ -29,3 +36,4 @@ export default function RootLayout({
     </html>
   );
 }
+
