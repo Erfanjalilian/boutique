@@ -1,27 +1,18 @@
-
 import type { Metadata } from "next";
 import "@fontsource/vazirmatn/400.css";
 import "@fontsource/vazirmatn/500.css";
 import "@fontsource/vazirmatn/600.css";
 import "@fontsource/vazirmatn/700.css";
 import { CartProvider } from "@/hooks/useCart";
-import { getSettings } from "@/lib/repositories";
 import "./globals.css";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getSettings();
-
-  return {
-    title: settings.metaTitle,
-    description: settings.metaDescription,
-    icons: {
-      icon: settings.favicon || "/Image/logo.svg",
-    },
-    other: {
-      enamad: "258664399",
-    },
-  };
-}
+export const metadata: Metadata = {
+  title: "Your Website",
+  description: "Your Website Description",
+  other: {
+    enamad: "25866399",
+  },
+};
 
 export default function RootLayout({
   children,
@@ -36,4 +27,3 @@ export default function RootLayout({
     </html>
   );
 }
-
