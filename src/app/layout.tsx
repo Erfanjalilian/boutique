@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: "Your Website",
   description: "Your Website Description",
   other: {
-    enamad: "73583586",
+    enamad: "18529217",
   },
 };
 
