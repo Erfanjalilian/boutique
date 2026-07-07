@@ -32,15 +32,40 @@ export async function POST(request: Request) {
       return apiError("کد تأیید یافت نشد. لطفاً دوباره درخواست دهید.");
     }
 
-    if (new Date(otpRecord.expiresAt) < new Date()) {
+    const now = Date.now();
+    const expiresAt = new Date(otpRecord.expiresAt).getTime();
+
+    // Expiry check
+    if (now > expiresAt) {
       await saveOtps(otps.filter((o) => o.phone !== phone));
       return apiError("کد تأیید منقضی شده است. لطفاً دوباره درخواست دهید.");
     }
 
-    if (otpRecord.code !== code) {
-      return apiError("کد تأیید نامعتبر است.");
+    const MAX_ATTEMPTS = 5;
+    const currentAttempts = otpRecord.attempts ?? 0;
+
+    if (currentAttempts >= MAX_ATTEMPTS) {
+      await saveOtps(otps.filter((o) => o.phone !== phone));
+      return apiError("تعداد تلاش‌ها بیشتر از حد مجاز است. لطفاً دوباره درخواست دهید.");
     }
 
+    if (otpRecord.code !== code) {
+      // increment attempts
+      const updated = otps.map((o) =>
+        o.phone === phone ? { ...o, attempts: (o.attempts ?? 0) + 1 } : o
+      );
+      await saveOtps(updated);
+
+      const attemptsLeft = MAX_ATTEMPTS - (currentAttempts + 1);
+      if (attemptsLeft <= 0) {
+        await saveOtps(otps.filter((o) => o.phone !== phone));
+        return apiError("تعداد تلاش‌ها بیشتر از حد مجاز است. لطفاً دوباره درخواست دهید.");
+      }
+
+      return apiError(`کد تأیید نامعتبر است. ${attemptsLeft} تلاش باقی مانده.`);
+    }
+
+    // Success: clean up
     await saveOtps(otps.filter((o) => o.phone !== phone));
 
     let user = await getUserByPhone(phone);

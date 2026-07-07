@@ -88,6 +88,12 @@ export interface OtpRecord {
   phone: string;
   code: string;
   expiresAt: string;
+  // ISO timestamp when code was last sent
+  sentAt?: string;
+  // number of verification attempts made
+  attempts?: number;
+  // number of times code was resent in a rolling window
+  resendCount?: number;
 }
 
 export interface ContactInfo {

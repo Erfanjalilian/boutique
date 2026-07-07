@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -13,6 +13,16 @@ export default function LoginPage() {
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [resendTimer, setResendTimer] = useState(0);
+
+  // countdown for resend
+  useEffect(() => {
+    if (resendTimer <= 0) return;
+    const id = setInterval(() => {
+      setResendTimer((t) => Math.max(0, t - 1));
+    }, 1000);
+    return () => clearInterval(id);
+  }, [resendTimer]);
 
   async function handleSendOtp(e: React.FormEvent) {
     e.preventDefault();
@@ -29,8 +39,29 @@ export default function LoginPage() {
 
     if (data.success) {
       setStep("otp");
+      setResendTimer(120); // start 2 minute countdown for resend
     } else {
       setError(data.error || "ارسال کد تأیید ناموفق بود");
+    }
+  }
+
+  async function handleResend() {
+    if (resendTimer > 0) return;
+    setLoading(true);
+    setError("");
+
+    const res = await fetch("/api/auth/send-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone }),
+    });
+    const data = await res.json();
+    setLoading(false);
+
+    if (data.success) {
+      setResendTimer(120);
+    } else {
+      setError(data.error || "ارسال مجدد ناموفق بود");
     }
   }
 
@@ -99,6 +130,16 @@ export default function LoginPage() {
             <Button type="submit" className="w-full" loading={loading}>
               تأیید و ورود
             </Button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleResend}
+                disabled={resendTimer > 0 || loading}
+                className="text-sm text-muted hover:text-primary transition-colors"
+              >
+                {resendTimer > 0 ? `ارسال مجدد در ${resendTimer}s` : "ارسال مجدد کد"}
+              </button>
+            </div>
             <button
               type="button"
               onClick={() => { setStep("phone"); setError(""); }}
@@ -109,10 +150,11 @@ export default function LoginPage() {
           </form>
         )}
 
-        <p className="text-xs text-muted text-center mt-6">
-          ورود مدیر: ۰۹۱۲۳۴۵۶۷۸۹
-        </p>
+        
       </Card>
     </div>
   );
 }
+
+// Countdown timer effect
+// (Placed after component to keep patch minimal; depends on resendTimer state)
