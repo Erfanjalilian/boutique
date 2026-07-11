@@ -1,5 +1,5 @@
 import { SignJWT, jwtVerify } from "jose";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import type { SessionPayload } from "@/types";
 
 const SECRET = new TextEncoder().encode(
@@ -35,11 +35,25 @@ export async function getSession(): Promise<SessionPayload | null> {
   return verifySession(token);
 }
 
+async function getCookieSecuritySetting(): Promise<boolean> {
+  const headerList = await headers();
+  const forwardedProto = headerList.get("x-forwarded-proto");
+  const forwardedProtocol = headerList.get("x-forwarded-protocol");
+
+  if (forwardedProto === "https" || forwardedProtocol === "https") {
+    return true;
+  }
+
+  return process.env.NODE_ENV === "production" ? false : false;
+}
+
 export async function setSessionCookie(token: string): Promise<void> {
   const cookieStore = await cookies();
+  const secure = await getCookieSecuritySetting();
+
   cookieStore.set(COOKIE_NAME, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure,
     sameSite: "lax",
     maxAge: MAX_AGE,
     path: "/",
