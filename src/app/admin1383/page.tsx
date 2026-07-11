@@ -3,6 +3,8 @@ import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { formatPrice, formatDate } from "@/utils/helpers";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminDashboardPage() {
   const stats = await getDashboardStats();
 

@@ -1,6 +1,8 @@
 import { getContact } from "@/lib/repositories";
 import { Card } from "@/components/ui/Card";
 
+export const dynamic = "force-dynamic";
+
 export default async function ContactPage() {
   const contact = await getContact();
 

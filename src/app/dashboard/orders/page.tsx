@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { formatPrice, formatDate } from "@/utils/helpers";
 
+export const dynamic = "force-dynamic";
+
 export default async function OrdersPage() {
   const session = await getSession();
   if (!session) redirect("/login");

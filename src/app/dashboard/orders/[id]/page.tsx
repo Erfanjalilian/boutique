@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/Badge";
 import { formatPrice, formatDate } from "@/utils/helpers";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export default async function OrderDetailPage({ params }: { params: { id: string } }) {
   const session = await getSession();
   if (!session) redirect("/login");
