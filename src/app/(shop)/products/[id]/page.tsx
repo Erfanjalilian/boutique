@@ -6,6 +6,8 @@ import {
   getCategories,
 } from "@/lib/repositories";
 
+export const dynamic = "force-dynamic";
+
 export default async function ProductDetailPage({
   params,
 }: {

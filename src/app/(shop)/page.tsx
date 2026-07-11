@@ -4,6 +4,8 @@ import { CategoryGrid } from "@/components/shop/CategoryGrid";
 import { PromoBanner } from "@/components/shop/PromoBanner";
 import { getProducts, getCategories } from "@/lib/repositories";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const [products, categories] = await Promise.all([
     getProducts(),

@@ -1,6 +1,8 @@
 import { getProducts, getCategories } from "@/lib/repositories";
 import { apiSuccess } from "@/utils/api";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const search = searchParams.get("search")?.toLowerCase() || "";
