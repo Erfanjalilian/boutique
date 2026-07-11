@@ -31,7 +31,7 @@ export async function middleware(request: NextRequest) {
 
   if (pathname === "/login" && session) {
     const redirect =
-      session.role === "admin" ? "/admin" : "/dashboard";
+      session.role === "admin" ? "/admin1383" : "/dashboard";
     return NextResponse.redirect(new URL(redirect, request.url));
   }
 

@@ -4,17 +4,19 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/utils/helpers";
 
+const adminPrefix = "/admin1383";
+
 const links = [
-  { href: "/admin", label: "داشبورد", icon: "📊" },
-  { href: "/admin/products", label: "محصولات", icon: "👕" },
-  { href: "/admin/orders", label: "سفارش‌ها", icon: "📦" },
-  { href: "/admin/users", label: "کاربران", icon: "👥" },
-  { href: "/admin/categories", label: "دسته‌بندی‌ها", icon: "🏷️" },
-  { href: "/admin/sizes", label: "سایزها", icon: "📏" },
-  { href: "/admin/colors", label: "رنگ‌ها", icon: "🎨" },
-  { href: "/admin/contact", label: "تماس", icon: "📞" },
-  { href: "/admin/about", label: "درباره ما", icon: "📝" },
-  { href: "/admin/settings", label: "تنظیمات", icon: "⚙️" },
+  { href: adminPrefix, label: "داشبورد", icon: "📊" },
+  { href: `${adminPrefix}/products`, label: "محصولات", icon: "👕" },
+  { href: `${adminPrefix}/orders`, label: "سفارش‌ها", icon: "📦" },
+  { href: `${adminPrefix}/users`, label: "کاربران", icon: "👥" },
+  { href: `${adminPrefix}/categories`, label: "دسته‌بندی‌ها", icon: "🏷️" },
+  { href: `${adminPrefix}/sizes`, label: "سایزها", icon: "📏" },
+  { href: `${adminPrefix}/colors`, label: "رنگ‌ها", icon: "🎨" },
+  { href: `${adminPrefix}/contact`, label: "تماس", icon: "📞" },
+  { href: `${adminPrefix}/about`, label: "درباره ما", icon: "📝" },
+  { href: `${adminPrefix}/settings`, label: "تنظیمات", icon: "⚙️" },
 ];
 
 export function AdminSidebar() {
@@ -23,7 +25,7 @@ export function AdminSidebar() {
   return (
     <aside className="w-64 shrink-0 bg-card border-s border-border/50 min-h-screen p-4">
       <div className="mb-8 px-2">
-        <Link href="/admin" className="text-xl font-bold text-primary">
+        <Link href={adminPrefix} className="text-xl font-bold text-primary">
           پنل مدیریت
         </Link>
         <p className="text-xs text-muted mt-1">مدیریت بوتیک</p>
@@ -31,8 +33,8 @@ export function AdminSidebar() {
       <nav className="space-y-1">
         {links.map((link) => {
           const active =
-            link.href === "/admin"
-              ? pathname === "/admin"
+            link.href === adminPrefix
+              ? pathname === adminPrefix
               : pathname.startsWith(link.href);
           return (
             <Link

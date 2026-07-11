@@ -60,7 +60,7 @@ export function OrdersAdminClient({
                 />
               </div>
               <Link
-                href={`/admin/orders/${order.id}`}
+                href={`/admin1383/orders/${order.id}`}
                 className="text-sm text-primary hover:underline"
               >
                 جزئیات

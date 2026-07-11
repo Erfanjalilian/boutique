@@ -123,7 +123,7 @@ export function ProductForm({ product, categories, sizes, colors }: ProductFormP
     setLoading(false);
 
     if (data.success) {
-      router.push("/admin/products");
+      router.push("/admin1383/products");
       router.refresh();
     } else {
       setError(data.error || "ذخیره محصول ناموفق بود");

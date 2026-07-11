@@ -29,7 +29,7 @@ export function ProductsAdminClient({
     <div className="animate-fade-in">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">مدیریت محصولات</h1>
-        <Link href="/admin/products/new">
+        <Link href="/admin1383/products/new">
           <Button>افزودن محصول</Button>
         </Link>
       </div>
@@ -56,7 +56,7 @@ export function ProductsAdminClient({
                 </div>
                 <p className="font-semibold text-primary">{formatPrice(product.price)}</p>
                 <div className="flex gap-2">
-                  <Link href={`/admin/products/${product.id}`}>
+                  <Link href={`/admin1383/products/${product.id}`}>
                     <Button variant="secondary" size="sm">ویرایش</Button>
                   </Link>
                   <Button variant="danger" size="sm" onClick={() => handleDelete(product.id)}>
