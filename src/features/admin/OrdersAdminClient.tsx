@@ -38,6 +38,9 @@ export function OrdersAdminClient({
   return (
     <div className="animate-fade-in">
       <h1 className="text-2xl font-bold mb-6">مدیریت سفارش‌ها</h1>
+      <div className="mb-6 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-700 dark:text-amber-300">
+        این بخش در حال توسعه است و در نسخه‌های بعدی امکان مدیریت کامل سفارش‌ها، رهگیری و جزئیات بیشتر اضافه خواهد شد.
+      </div>
       <div className="space-y-3">
         {orders.map((order) => (
           <Card key={order.id} className="p-5">

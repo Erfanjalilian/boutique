@@ -40,6 +40,7 @@ export interface Product {
   name: string;
   description: string;
   price: number;
+  discountPercent?: number;
   images: string[];
   categoryId: string;
   sizes: string[];      // Keep if used elsewhere (e.g., admin panel)

@@ -73,9 +73,21 @@ export function ProductDetailClient({
             <p className="text-sm text-primary font-medium mb-2">{category.name}</p>
           )}
           <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
-          <p className="text-3xl font-bold text-primary mb-6">
-            {formatPrice(product.price)}
-          </p>
+          <div className="mb-6">
+            <p className="text-3xl font-bold text-primary">
+              {formatPrice(product.discountPercent ? product.price - (product.price * product.discountPercent) / 100 : product.price)}
+            </p>
+            {product.discountPercent ? (
+              <div className="mt-2 flex items-center gap-2">
+                <span className="text-sm text-muted line-through">
+                  {formatPrice(product.price)}
+                </span>
+                <span className="text-sm text-green-600 bg-green-500/10 px-2 py-1 rounded-full">
+                  %{product.discountPercent} تخفیف
+                </span>
+              </div>
+            ) : null}
+          </div>
           <p className="text-muted leading-relaxed mb-8">{product.description}</p>
 
           {/* Quantity Selector */}

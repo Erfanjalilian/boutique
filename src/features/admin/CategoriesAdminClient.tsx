@@ -15,17 +15,40 @@ export function CategoriesAdminClient({
   const [categories, setCategories] = useState(initialCategories);
   const [name, setName] = useState("");
   const [image, setImage] = useState<string[]>([]);
+  const [imageUrlInput, setImageUrlInput] = useState("");
+  const [imageUrlError, setImageUrlError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  function handleAddImageUrl() {
+    const trimmed = imageUrlInput.trim();
+    if (!trimmed) {
+      setImageUrlError("لطفاً لینک تصویر را وارد کنید.");
+      return;
+    }
+
+    try {
+      new URL(trimmed);
+    } catch {
+      setImageUrlError("لینک تصویر معتبر نیست.");
+      return;
+    }
+
+    setImageUrlError("");
+    setImage([trimmed]);
+    setImageUrlInput("");
+  }
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) return;
     setLoading(true);
 
+    const selectedImage = image[0] || imageUrlInput.trim() || undefined;
+
     const res = await fetch("/api/admin/categories", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, image: image[0] }),
+      body: JSON.stringify({ name, image: selectedImage }),
     });
     const data = await res.json();
     setLoading(false);
@@ -64,6 +87,23 @@ export function CategoriesAdminClient({
               multiple={false}
               prefix="category"
             />
+            <div className="mt-3 space-y-2">
+              <label className="block text-sm font-medium text-muted">یا لینک تصویر را وارد کنید</label>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <Input
+                  value={imageUrlInput}
+                  onChange={(e) => {
+                    setImageUrlInput(e.target.value);
+                    if (imageUrlError) setImageUrlError("");
+                  }}
+                  placeholder="https://example.com/category.jpg"
+                />
+                <Button type="button" variant="secondary" onClick={handleAddImageUrl}>
+                  افزودن لینک
+                </Button>
+              </div>
+              {imageUrlError && <p className="text-sm text-red-400">{imageUrlError}</p>}
+            </div>
           </div>
           <Button type="submit" loading={loading} className="mt-4">
             افزودن دسته‌بندی

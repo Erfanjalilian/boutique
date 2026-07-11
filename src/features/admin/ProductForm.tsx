@@ -21,10 +21,15 @@ export function ProductForm({ product, categories, sizes, colors }: ProductFormP
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [imageUrlInput, setImageUrlInput] = useState("");
+  const [imageUrlError, setImageUrlError] = useState("");
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [newCategoryLoading, setNewCategoryLoading] = useState(false);
   const [form, setForm] = useState({
     name: product?.name || "",
     description: product?.description || "",
     price: product?.price?.toString() || "",
+    discountPercent: product?.discountPercent?.toString() || "",
     categoryId: product?.categoryId || categories[0]?.id || "",
     images: product?.images || [],
     sizes: product?.sizes || [],
@@ -44,6 +49,45 @@ export function ProductForm({ product, categories, sizes, colors }: ProductFormP
     }));
   }
 
+  function handleAddImageUrl() {
+    const trimmed = imageUrlInput.trim();
+    if (!trimmed) {
+      setImageUrlError("لطفاً لینک تصویر را وارد کنید.");
+      return;
+    }
+
+    try {
+      new URL(trimmed);
+    } catch {
+      setImageUrlError("لینک تصویر معتبر نیست.");
+      return;
+    }
+
+    setImageUrlError("");
+    setForm((f) => ({ ...f, images: [...f.images, trimmed] }));
+    setImageUrlInput("");
+  }
+
+  async function handleCreateCategory() {
+    const name = newCategoryName.trim();
+    if (!name) return;
+
+    setNewCategoryLoading(true);
+    const res = await fetch("/api/admin/categories", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name }),
+    });
+    const data = await res.json();
+    setNewCategoryLoading(false);
+
+    if (data.success) {
+      setNewCategoryName("");
+      setForm((f) => ({ ...f, categoryId: data.data.id }));
+      window.location.reload();
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -53,6 +97,7 @@ export function ProductForm({ product, categories, sizes, colors }: ProductFormP
       name: form.name,
       description: form.description,
       price: Number(form.price),
+      discountPercent: Number(form.discountPercent || 0),
       categoryId: form.categoryId,
       images: form.images,
       sizes: form.sizes,
@@ -109,6 +154,14 @@ export function ProductForm({ product, categories, sizes, colors }: ProductFormP
             onChange={(e) => setForm({ ...form, price: e.target.value })}
           />
           <Input
+            label="درصد تخفیف"
+            type="number"
+            min="0"
+            max="100"
+            value={form.discountPercent}
+            onChange={(e) => setForm({ ...form, discountPercent: e.target.value })}
+          />
+          <Input
             label="موجودی"
             type="number"
             required
@@ -122,6 +175,19 @@ export function ProductForm({ product, categories, sizes, colors }: ProductFormP
           onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
           options={categories.map((c) => ({ value: c.id, label: c.name }))}
         />
+        <div className="rounded-xl border border-dashed border-border p-4 space-y-2">
+          <label className="block text-sm font-medium text-muted">افزودن دسته‌بندی جدید</label>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Input
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+              placeholder="مثلاً کت و شلوار"
+            />
+            <Button type="button" variant="secondary" onClick={handleCreateCategory} loading={newCategoryLoading}>
+              ثبت دسته‌بندی
+            </Button>
+          </div>
+        </div>
       </Card>
 
       <Card className="p-6">
@@ -130,6 +196,23 @@ export function ProductForm({ product, categories, sizes, colors }: ProductFormP
           images={form.images}
           onChange={(images) => setForm({ ...form, images })}
         />
+        <div className="mt-4 space-y-2">
+          <label className="block text-sm font-medium text-muted">یا لینک تصویر را مستقیم وارد کنید</label>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Input
+              value={imageUrlInput}
+              onChange={(e) => {
+                setImageUrlInput(e.target.value);
+                if (imageUrlError) setImageUrlError("");
+              }}
+              placeholder="https://example.com/image.jpg"
+            />
+            <Button type="button" variant="secondary" onClick={handleAddImageUrl}>
+              افزودن لینک
+            </Button>
+          </div>
+          {imageUrlError && <p className="text-sm text-red-400">{imageUrlError}</p>}
+        </div>
       </Card>
 
       <Card className="p-6 space-y-4">

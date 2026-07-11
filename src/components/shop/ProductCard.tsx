@@ -30,9 +30,16 @@ export function ProductCard({ product }: { product: Product }) {
           <h3 className="font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1">
             {product.name}
           </h3>
-          <p className="mt-1 text-lg font-semibold text-primary">
-            {formatPrice(product.price)}
-          </p>
+          <div className="mt-1 flex items-center gap-2">
+            <p className="text-lg font-semibold text-primary">
+              {formatPrice(product.discountPercent ? product.price - (product.price * product.discountPercent) / 100 : product.price)}
+            </p>
+            {product.discountPercent ? (
+              <span className="text-xs text-green-600 bg-green-500/10 px-2 py-1 rounded-full">
+                %{product.discountPercent} تخفیف
+              </span>
+            ) : null}
+          </div>
         </div>
       </div>
     </Link>
