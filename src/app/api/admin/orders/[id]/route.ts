@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { getSession } from "@/lib/auth";
 import { getOrders, getOrderById, saveOrders } from "@/lib/repositories";
 import { apiSuccess, apiError } from "@/utils/api";
 
@@ -19,10 +18,6 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getSession();
-    if (!session) return apiError("Unauthorized", 401);
-    if (session.role !== "admin") return apiError("Forbidden", 403);
-
     const { id } = await params;
     const order = await getOrderById(id);
     
@@ -43,11 +38,6 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getSession();
-    if (!session || session.role !== "admin") {
-      return apiError("Unauthorized", 401);
-    }
-
     const { id } = await params;
     const body = await request.json();
     

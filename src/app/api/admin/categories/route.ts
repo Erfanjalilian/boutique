@@ -21,7 +21,6 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  if (!(await requireAdmin())) return apiError("Unauthorized", 401);
 
   const body = await request.json();
   const parsed = categorySchema.safeParse(body);
@@ -60,7 +59,6 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  if (!(await requireAdmin())) return apiError("Unauthorized", 401);
 
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");

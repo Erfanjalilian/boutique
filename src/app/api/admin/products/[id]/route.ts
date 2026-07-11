@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { getSession } from "@/lib/auth";
 import { getProducts, saveProducts } from "@/lib/repositories";
 import { apiSuccess, apiError } from "@/utils/api";
 
@@ -18,18 +17,10 @@ const productSchema = z.object({
   stock: z.number().min(0).optional(),
 });
 
-async function requireAdmin() {
-  const session = await getSession();
-  if (!session || session.role !== "admin") return null;
-  return session;
-}
-
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  if (!(await requireAdmin())) return apiError("Unauthorized", 401);
-
   const { id } = await params;
   const body = await request.json();
   const parsed = productSchema.safeParse(body);
@@ -48,8 +39,6 @@ export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  if (!(await requireAdmin())) return apiError("Unauthorized", 401);
-
   const { id } = await params;
   const products = await getProducts();
   const filtered = products.filter((p) => p.id !== id);

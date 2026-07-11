@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { getSession } from "@/lib/auth";
 import { getProducts, saveProducts } from "@/lib/repositories";
 import { generateId } from "@/utils/helpers";
 import { apiSuccess, apiError } from "@/utils/api";
@@ -19,21 +18,12 @@ const productSchema = z.object({
   stock: z.number().min(0),
 });
 
-async function requireAdmin() {
-  const session = await getSession();
-  if (!session || session.role !== "admin") return null;
-  return session;
-}
-
 export async function GET() {
-  if (!(await requireAdmin())) return apiError("Unauthorized", 401);
   const products = await getProducts();
   return apiSuccess(products);
 }
 
 export async function POST(request: Request) {
-  if (!(await requireAdmin())) return apiError("Unauthorized", 401);
-
   try {
     const body = await request.json();
     const parsed = productSchema.safeParse(body);
