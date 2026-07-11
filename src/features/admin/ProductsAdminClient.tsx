@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
@@ -17,11 +17,23 @@ export function ProductsAdminClient({
 }) {
   const [products, setProducts] = useState(initialProducts);
 
+  useEffect(() => {
+    setProducts(initialProducts);
+  }, [initialProducts]);
+
+  async function refreshProducts() {
+    const res = await fetch("/api/admin/products");
+    if (res.ok) {
+      const data = await res.json();
+      setProducts(data.data || []);
+    }
+  }
+
   async function handleDelete(id: string) {
     if (!confirm("آیا از حذف این محصول اطمینان دارید؟")) return;
     const res = await fetch(`/api/admin/products/${id}`, { method: "DELETE" });
     if (res.ok) {
-      setProducts(products.filter((p) => p.id !== id));
+      await refreshProducts();
     }
   }
 
