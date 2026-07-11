@@ -100,7 +100,7 @@ export async function POST(request: Request) {
         name: user.name,
         role: user.role,
       },
-      redirectTo: user.role === "admin" ? "/admin" : "/dashboard",
+      redirectTo: user.role === "admin" ? "/admin1383" : "/dashboard",
     });
   } catch {
     return apiError("خطای سرور", 500);

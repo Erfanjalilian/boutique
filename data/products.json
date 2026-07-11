@@ -5,7 +5,7 @@
     "description": "دستبند چرمی اصل با قفل استیل ضد حساسیت، مناسب برای استفاده روزمره و مهمانی",
     "price": 890000,
     "images": [
-      "/Image/bracelet-1.jpg"
+      "/Image/placeholder-product.svg"
     ],
     "categoryId": "cat-002",
     "featured": true,
@@ -20,7 +20,7 @@
     "description": "انگشتر نقره 925 عیار با حکاکی اختصاصی و طراحی مدرن",
     "price": 2490000,
     "images": [
-      "/Image/ring-1.jpg"
+      "/Image/placeholder-product.svg"
     ],
     "categoryId": "cat-003",
     "featured": true,
@@ -35,7 +35,7 @@
     "description": "پلاک نام استیل با قابلیت حک اسم دلخواه، هدیه ای ماندگار و خاص",
     "price": 389000,
     "images": [
-      "/Image/nameplate-1.jpg"
+      "/Image/placeholder-product.svg"
     ],
     "categoryId": "cat-005",
     "featured": true,
@@ -50,7 +50,7 @@
     "description": "پابند ظریف و شیک با روکش طلا، مناسب برای موقعیت های خاص",
     "price": 1890000,
     "images": [
-      "/Image/anklet-1.jpg"
+      "/Image/placeholder-product.svg"
     ],
     "categoryId": "cat-004",
     "featured": true,
@@ -65,7 +65,7 @@
     "description": "آویز ساعتی زیبا با زنجیر نقره، ترکیبی از ساعت و جواهر",
     "price": 990000,
     "images": [
-      "/Image/watch-pendant-1.jpg"
+      "/Image/placeholder-product.svg"
     ],
     "categoryId": "cat-006",
     "featured": false,
@@ -80,7 +80,7 @@
     "description": "دستبند با سنگ های طبیعی و مغناطیس، مناسب برای کاهش استرس و انرژی مثبت",
     "price": 790000,
     "images": [
-      "/Image/bracelet-2.jpg"
+      "/Image/placeholder-product.svg"
     ],
     "categoryId": "cat-002",
     "featured": false,
@@ -95,7 +95,7 @@
     "description": "انگشتر نامزدی با نگین الماس و طراحی کلاسیک",
     "price": 4990000,
     "images": [
-      "/Image/ring-2.jpg"
+      "/Image/placeholder-product.svg"
     ],
     "categoryId": "cat-003",
     "featured": false,
