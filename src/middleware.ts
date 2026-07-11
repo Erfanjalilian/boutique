@@ -23,25 +23,6 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const session = await getSession(request);
 
-  if (pathname === "/admin1383" || pathname.startsWith("/admin1383/")) {
-    if (!session) {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-    if (session.role !== "admin") {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
-    return NextResponse.redirect(new URL("/admin", request.url));
-  }
-
-  if (pathname.startsWith("/admin")) {
-    if (!session) {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-    if (session.role !== "admin") {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
-  }
-
   if (pathname.startsWith("/dashboard")) {
     if (!session) {
       return NextResponse.redirect(new URL("/login", request.url));
