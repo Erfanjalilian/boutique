@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { useApi } from "@/hooks/useApi";
 import type { Category } from "@/types";
 
 export function CategoriesAdminClient({
@@ -12,7 +13,12 @@ export function CategoriesAdminClient({
 }: {
   initialCategories: Category[];
 }) {
-  const [categories, setCategories] = useState(initialCategories);
+  const { data: categoriesData, refetch } = useApi<Category[]>(
+    "/api/admin/categories",
+    { revalidateInterval: 3000 } // ۳ ثانیه auto-refetch
+  );
+  const categories = categoriesData ?? initialCategories;
+
   const [name, setName] = useState("");
   const [image, setImage] = useState<string[]>([]);
   const [imageUrlInput, setImageUrlInput] = useState("");
@@ -43,20 +49,24 @@ export function CategoriesAdminClient({
     if (!name.trim()) return;
     setLoading(true);
 
-    const selectedImage = image[0] || imageUrlInput.trim() || undefined;
+    try {
+      const selectedImage = image[0] || imageUrlInput.trim() || undefined;
 
-    const res = await fetch("/api/admin/categories", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, image: selectedImage }),
-    });
-    const data = await res.json();
-    setLoading(false);
+      const res = await fetch("/api/admin/categories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, image: selectedImage }),
+      });
+      const data = await res.json();
 
-    if (data.success) {
-      setCategories([...categories, data.data]);
-      setName("");
-      setImage([]);
+      if (data.success) {
+        setName("");
+        setImage([]);
+        // خودکار refetch پس از افزودن
+        await refetch();
+      }
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -64,7 +74,8 @@ export function CategoriesAdminClient({
     if (!confirm("آیا از حذف این دسته‌بندی اطمینان دارید؟")) return;
     const res = await fetch(`/api/admin/categories?id=${id}`, { method: "DELETE" });
     if (res.ok) {
-      setCategories(categories.filter((c) => c.id !== id));
+      // خودکار refetch پس از حذف
+      await refetch();
     }
   }
 

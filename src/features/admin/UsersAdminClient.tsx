@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { Card } from "@/components/ui/Card";
 import { Select } from "@/components/ui/Select";
 import { formatDate } from "@/utils/helpers";
+import { useApi } from "@/hooks/useApi";
 import type { User, UserRole } from "@/types";
 
 export function UsersAdminClient({
@@ -11,7 +11,11 @@ export function UsersAdminClient({
 }: {
   initialUsers: User[];
 }) {
-  const [users, setUsers] = useState(initialUsers);
+  const { data: usersData, refetch } = useApi<User[]>(
+    "/api/admin/users",
+    { revalidateInterval: 5000 } // ۵ ثانیه auto-refetch
+  );
+  const users = usersData ?? initialUsers;
 
   async function updateRole(id: string, role: UserRole) {
     const res = await fetch(`/api/admin/users/${id}`, {
@@ -21,7 +25,8 @@ export function UsersAdminClient({
     });
     const data = await res.json();
     if (data.success) {
-      setUsers(users.map((u) => (u.id === id ? data.data : u)));
+      // خودکار refetch پس از تغییر نقش
+      await refetch();
     }
   }
 

@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { formatPrice } from "@/utils/helpers";
+import { useApi } from "@/hooks/useApi";
 import type { Product, Category } from "@/types";
 
 export function ProductsAdminClient({
@@ -15,25 +16,18 @@ export function ProductsAdminClient({
   initialProducts: Product[];
   categories: Category[];
 }) {
-  const [products, setProducts] = useState(initialProducts);
-
-  useEffect(() => {
-    setProducts(initialProducts);
-  }, [initialProducts]);
-
-  async function refreshProducts() {
-    const res = await fetch("/api/admin/products");
-    if (res.ok) {
-      const data = await res.json();
-      setProducts(data.data || []);
-    }
-  }
+  const { data: productsData, refetch, mutate } = useApi<Product[]>(
+    "/api/admin/products",
+    { revalidateInterval: 3000, revalidateOnMount: true } // ۳ ثانیه auto-refetch
+  );
+  const products = productsData ?? initialProducts;
 
   async function handleDelete(id: string) {
     if (!confirm("آیا از حذف این محصول اطمینان دارید؟")) return;
     const res = await fetch(`/api/admin/products/${id}`, { method: "DELETE" });
     if (res.ok) {
-      await refreshProducts();
+      mutate(products.filter((product) => product.id !== id));
+      await refetch(); // خودکار refetch پس از حذف
     }
   }
 

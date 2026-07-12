@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { useApi } from "@/hooks/useApi";
 
 interface CrudItem {
   id: string;
@@ -24,7 +25,12 @@ export function SimpleCrudAdmin({
   initialItems,
   showHex,
 }: SimpleCrudAdminProps) {
-  const [items, setItems] = useState(initialItems);
+  const { data: itemsData, loading: fetching, refetch } = useApi<CrudItem[]>(
+    apiPath,
+    { revalidateInterval: 3000 } // ۳ ثانیه auto-refetch
+  );
+  const items = itemsData ?? initialItems;
+
   const [name, setName] = useState("");
   const [hex, setHex] = useState("#000000");
   const [loading, setLoading] = useState(false);
@@ -34,19 +40,23 @@ export function SimpleCrudAdmin({
     if (!name.trim()) return;
     setLoading(true);
 
-    const body = showHex ? { name, hex } : { name };
-    const res = await fetch(apiPath, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    const data = await res.json();
-    setLoading(false);
+    try {
+      const body = showHex ? { name, hex } : { name };
+      const res = await fetch(apiPath, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
 
-    if (data.success) {
-      setItems([...items, data.data]);
-      setName("");
-      setHex("#000000");
+      if (data.success || res.ok) {
+        setName("");
+        setHex("#000000");
+        // خودکار refetch پس از افزودن
+        await refetch();
+      }
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -54,7 +64,8 @@ export function SimpleCrudAdmin({
     if (!confirm("آیا از حذف اطمینان دارید؟")) return;
     const res = await fetch(`${apiPath}?id=${id}`, { method: "DELETE" });
     if (res.ok) {
-      setItems(items.filter((i) => i.id !== id));
+      // خودکار refetch پس از حذف
+      await refetch();
     }
   }
 

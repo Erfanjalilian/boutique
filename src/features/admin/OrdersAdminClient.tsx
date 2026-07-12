@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { Select } from "@/components/ui/Select";
 import { formatPrice, formatDate } from "@/utils/helpers";
 import { orderStatusLabels } from "@/utils/labels";
+import { useApi } from "@/hooks/useApi";
 import type { Order, OrderStatus } from "@/types";
 
 const statuses: OrderStatus[] = [
@@ -21,7 +21,11 @@ export function OrdersAdminClient({
 }: {
   initialOrders: Order[];
 }) {
-  const [orders, setOrders] = useState(initialOrders);
+  const { data: ordersData, refetch } = useApi<Order[]>(
+    "/api/admin/orders",
+    { revalidateInterval: 5000 } // ۵ ثانیه auto-refetch
+  );
+  const orders = ordersData ?? initialOrders;
 
   async function updateStatus(id: string, status: OrderStatus) {
     const res = await fetch(`/api/admin/orders/${id}`, {
@@ -31,7 +35,8 @@ export function OrdersAdminClient({
     });
     const data = await res.json();
     if (data.success) {
-      setOrders(orders.map((o) => (o.id === id ? data.data : o)));
+      // خودکار refetch پس از تغییر وضعیت
+      await refetch();
     }
   }
 

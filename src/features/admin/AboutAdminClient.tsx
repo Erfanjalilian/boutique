@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { useApi } from "@/hooks/useApi";
 import type { AboutInfo } from "@/types";
 
 export function AboutAdminClient({
@@ -11,9 +12,20 @@ export function AboutAdminClient({
 }: {
   initialAbout: AboutInfo;
 }) {
-  const [form, setForm] = useState(initialAbout);
+  const { data: latestAbout, refetch } = useApi<AboutInfo>(
+    "/api/admin/about",
+    { revalidateInterval: 3000 } // ۳ ثانیه auto-refetch
+  );
+
+  const about = latestAbout || initialAbout;
+  const [form, setForm] = useState(about);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+
+  // وقتی data از server تغییر می‌کند، form را به‌روزرسانی کنید
+  useEffect(() => {
+    setForm(latestAbout || initialAbout);
+  }, [latestAbout, initialAbout]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -28,6 +40,10 @@ export function AboutAdminClient({
     const data = await res.json();
     setLoading(false);
     setMessage(data.success ? "صفحه درباره ما به‌روزرسانی شد!" : data.error);
+    if (data.success) {
+      // خودکار refetch پس از ذخیره
+      await refetch();
+    }
   }
 
   const fields = [
