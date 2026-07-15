@@ -135,6 +135,7 @@ export interface SiteSettings {
   logo: string;
   footerText: string;
   footerLinks: { label: string; href: string }[];
+  zibalMerchant?: string;
 }
 
 export interface SessionPayload {

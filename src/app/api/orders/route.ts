@@ -27,6 +27,20 @@ const createOrderSchema = z.object({
   notes: z.string().optional(),
 });
 
+function getBaseUrl() {
+  const appUrl = process.env.APP_URL?.trim();
+  if (appUrl) {
+    return appUrl.replace(/\/$/, "");
+  }
+
+  const vercelUrl = process.env.VERCEL_URL?.trim();
+  if (vercelUrl) {
+    return `https://${vercelUrl.replace(/^https?:\/\//, "")}`;
+  }
+
+  return "http://localhost:3000";
+}
+
 export async function GET() {
   const session = await getSession();
   if (!session) return apiError("Unauthorized", 401);
@@ -52,8 +66,7 @@ export async function POST(request: Request) {
       return apiError(parsed.error.issues[0].message);
     }
 
-    const { items, fullName, phone, address, postalCode, notes } =
-      parsed.data;
+    const { items, fullName, phone, address, postalCode, notes } = parsed.data;
 
     const total = items.reduce(
       (sum, item) => sum + item.price * item.quantity,
@@ -78,10 +91,7 @@ export async function POST(request: Request) {
     orders.push(order);
     await saveOrders(orders);
 
-    const baseUrl =
-      process.env.APP_URL ||
-      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
-    const callbackUrl = new URL("/api/orders/callback", baseUrl).toString();
+    const callbackUrl = new URL("/api/orders/callback", getBaseUrl()).toString();
 
     let zibalResult;
     try {
@@ -93,7 +103,7 @@ export async function POST(request: Request) {
         mobile: phone,
       });
     } catch (error) {
-      console.error("Zibal payment request failed:", error);
+      console.error("[Orders] Zibal payment request failed", error);
       const idx = orders.findIndex((o) => o.id === order.id);
       if (idx !== -1) {
         orders[idx] = {
@@ -106,7 +116,9 @@ export async function POST(request: Request) {
         await saveOrders(orders);
       }
       return apiError(
-        "درخواست درگاه پرداخت انجام نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
+        error instanceof Error
+          ? error.message
+          : "درخواست درگاه پرداخت انجام نشد. لطفاً دوباره تلاش کنید.",
         502
       );
     }
@@ -116,6 +128,7 @@ export async function POST(request: Request) {
       orders[idx] = {
         ...orders[idx],
         paymentTrackId: zibalResult.trackId,
+        paymentMessage: zibalResult.message || "در انتظار پرداخت",
       };
       await saveOrders(orders);
     }
@@ -124,9 +137,15 @@ export async function POST(request: Request) {
     if (user && !user.name) {
       const { getUsers, saveUsers } = await import("@/lib/repositories");
       const users = await getUsers();
-      const idx = users.findIndex((u) => u.id === user.id);
-      if (idx !== -1) {
-        users[idx] = { ...users[idx], name: fullName, address, postalCode, phone };
+      const userIndex = users.findIndex((u) => u.id === user.id);
+      if (userIndex !== -1) {
+        users[userIndex] = {
+          ...users[userIndex],
+          name: fullName,
+          address,
+          postalCode,
+          phone,
+        };
         await saveUsers(users);
       }
     }
@@ -139,7 +158,7 @@ export async function POST(request: Request) {
       201
     );
   } catch (error) {
-    console.error("Order creation failed:", error);
+    console.error("[Orders] Order creation failed", error);
     return apiError("Internal server error", 500);
   }
 }

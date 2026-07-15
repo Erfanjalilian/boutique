@@ -1,17 +1,28 @@
 import { getOrderByTrackId, getOrders, saveOrders } from "@/lib/repositories";
 import { verifyZibalPayment, ZibalApiError } from "@/services/zibal";
-import { apiError, apiSuccess } from "@/utils/api";
+import { apiError } from "@/utils/api";
 
 function isCancellationLike(value?: string | null): boolean {
   const normalized = value?.toLowerCase();
   return ["0", "false", "cancelled", "canceled", "failed", "2"].includes(normalized || "");
 }
 
+function getBaseUrl() {
+  const appUrl = process.env.APP_URL?.trim();
+  if (appUrl) {
+    return appUrl.replace(/\/$/, "");
+  }
+
+  const vercelUrl = process.env.VERCEL_URL?.trim();
+  if (vercelUrl) {
+    return `https://${vercelUrl.replace(/^https?:\/\//, "")}`;
+  }
+
+  return "http://localhost:3000";
+}
+
 function getRedirectUrl(orderId: string) {
-  return new URL(
-    `/order-success?id=${orderId}`,
-    process.env.APP_URL || "http://localhost:3000"
-  );
+  return new URL(`/order-success?id=${orderId}`, getBaseUrl()).toString();
 }
 
 export async function GET(request: Request) {
@@ -21,6 +32,13 @@ export async function GET(request: Request) {
     const successParam = url.searchParams.get("success");
     const statusParam = url.searchParams.get("status");
     const orderIdParam = url.searchParams.get("orderId");
+
+    console.log("[Zibal][callback] query", {
+      trackId,
+      successParam,
+      statusParam,
+      orderIdParam,
+    });
 
     if (!trackId) {
       return apiError("پارامتر trackId ارسال نشده است", 400);
@@ -42,24 +60,31 @@ export async function GET(request: Request) {
     }
 
     if (orders[idx].status === "Paid") {
-      return apiSuccess({ message: "این تراکنش قبلاً تایید شده است" });
+      return new Response(null, {
+        status: 302,
+        headers: { Location: getRedirectUrl(orders[idx].id) },
+      });
     }
 
-    if (orders[idx].status === "Cancelled") {
-      return apiSuccess({ message: "این سفارش قبلاً لغو شده است" });
+    if (orders[idx].status === "Cancelled" || orders[idx].status === "Failed") {
+      return new Response(null, {
+        status: 302,
+        headers: { Location: getRedirectUrl(orders[idx].id) },
+      });
     }
 
     if (isCancellationLike(successParam) || isCancellationLike(statusParam)) {
+      const failureStatus = statusParam?.toLowerCase() === "cancelled" || statusParam?.toLowerCase() === "canceled" ? "Cancelled" : "Failed";
       orders[idx] = {
         ...orders[idx],
-        status: statusParam?.toLowerCase() === "cancelled" || statusParam?.toLowerCase() === "canceled" ? "Cancelled" : "Failed",
+        status: failureStatus,
         paymentMessage: "پرداخت لغو یا ناموفق شد",
         paymentDate: new Date().toISOString(),
       };
       await saveOrders(orders);
       return new Response(null, {
         status: 302,
-        headers: { Location: getRedirectUrl(orders[idx].id).toString() },
+        headers: { Location: getRedirectUrl(orders[idx].id) },
       });
     }
 
@@ -82,7 +107,7 @@ export async function GET(request: Request) {
         await saveOrders(orders);
         return new Response(null, {
           status: 302,
-          headers: { Location: getRedirectUrl(orders[idx].id).toString() },
+          headers: { Location: getRedirectUrl(orders[idx].id) },
         });
       }
 
@@ -92,7 +117,7 @@ export async function GET(request: Request) {
         paymentReferenceId: verifyResult.referenceNumber,
         paymentAmount: verifyResult.amount,
         paymentCardNumber: verifyResult.cardNumber,
-        paymentMessage: verifyResult.message,
+        paymentMessage: verifyResult.message || "پرداخت با موفقیت تایید شد",
         paymentDate: new Date().toISOString(),
       };
 
@@ -100,7 +125,7 @@ export async function GET(request: Request) {
 
       return new Response(null, {
         status: 302,
-        headers: { Location: getRedirectUrl(orders[idx].id).toString() },
+        headers: { Location: getRedirectUrl(orders[idx].id) },
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : "خطا در تأیید پرداخت";
@@ -116,11 +141,11 @@ export async function GET(request: Request) {
 
       return new Response(null, {
         status: 302,
-        headers: { Location: getRedirectUrl(orders[idx].id).toString() },
+        headers: { Location: getRedirectUrl(orders[idx].id) },
       });
     }
   } catch (error) {
-    console.error("Zibal callback handling failed:", error);
+    console.error("[Zibal][callback] failed", error);
     return apiError("خطا در پردازش بازگشت پرداخت", 500);
   }
 }

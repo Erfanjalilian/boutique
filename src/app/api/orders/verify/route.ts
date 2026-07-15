@@ -60,7 +60,7 @@ export async function POST(request: Request) {
         paymentReferenceId: result.referenceNumber,
         paymentAmount: result.amount,
         paymentCardNumber: result.cardNumber,
-        paymentMessage: result.message,
+        paymentMessage: result.message || "پرداخت با موفقیت تایید شد",
         paymentDate: new Date().toISOString(),
       };
 
@@ -85,7 +85,7 @@ export async function POST(request: Request) {
       return apiError(message, 402);
     }
   } catch (error) {
-    console.error("Payment verification failed:", error);
+    console.error("[Zibal][verify] failed", error);
     return apiError("خطای سرور در تأیید پرداخت", 500);
   }
 }
