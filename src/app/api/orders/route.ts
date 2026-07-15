@@ -94,34 +94,34 @@ export async function POST(request: Request) {
     const callbackUrl = new URL("/api/orders/callback", getBaseUrl()).toString();
 
     let zibalResult;
-    try {
-      zibalResult = await requestZibalPayment({
-        amount: total,
-        callbackUrl,
-        description: `سفارش ${order.id}`,
-        orderId: order.id,
-        mobile: phone,
-      });
-    } catch (error) {
-      console.error("[Orders] Zibal payment request failed", error);
-      const idx = orders.findIndex((o) => o.id === order.id);
-      if (idx !== -1) {
-        orders[idx] = {
-          ...orders[idx],
-          status: "Failed",
-          paymentMessage:
-            error instanceof Error ? error.message : "خطای نامعلوم در درگاه پرداخت",
-          paymentDate: new Date().toISOString(),
-        };
-        await saveOrders(orders);
-      }
-      return apiError(
-        error instanceof Error
-          ? error.message
-          : "درخواست درگاه پرداخت انجام نشد. لطفاً دوباره تلاش کنید.",
-        502
-      );
-    }
+try {
+  zibalResult = await requestZibalPayment({
+    amount: total,
+    callbackUrl,
+    description: `سفارش ${order.id}`,
+    orderId: order.id,
+    mobile: phone,
+  });
+} catch (error) {
+  console.error("[Orders] Zibal payment request failed", error);
+  const idx = orders.findIndex((o) => o.id === order.id);
+  if (idx !== -1) {
+    orders[idx] = {
+      ...orders[idx],
+      status: "Failed",
+      paymentMessage:
+        error instanceof Error ? error.message : "خطای نامعلوم در درگاه پرداخت",
+      paymentDate: new Date().toISOString(),
+    };
+    await saveOrders(orders);
+  }
+  return apiError(
+    error instanceof Error
+      ? error.message
+      : "درخواست درگاه پرداخت انجام نشد. لطفاً دوباره تلاش کنید.",
+    502
+  );
+}
 
     const idx = orders.findIndex((o) => o.id === order.id);
     if (idx !== -1) {
