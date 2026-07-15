@@ -1,5 +1,17 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Environment Setup
+
+Copy the example environment file and fill in your values:
+
+```bash
+copy .env.example .env.local
+```
+
+Required variables:
+- `ZIBAL_MERCHANT`: your Zibal merchant key
+- `APP_URL`: your app base URL, such as `http://localhost:3000`
+
 ## Getting Started
 
 First, run the development server:

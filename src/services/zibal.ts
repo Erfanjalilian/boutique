@@ -1,8 +1,11 @@
 const ZIBAL_BASE_URL = "https://gateway.zibal.ir/v1";
 
-const merchantKey = process.env.ZIBAL_MERCHANT?.trim();
-if (!merchantKey) {
-  throw new Error("Missing ZIBAL_MERCHANT environment variable");
+function getMerchantKey() {
+  const merchantKey = process.env.ZIBAL_MERCHANT?.trim();
+  if (!merchantKey) {
+    throw new Error("Missing ZIBAL_MERCHANT environment variable");
+  }
+  return merchantKey;
 }
 
 type ZibalRequestResponse = {
@@ -28,6 +31,8 @@ export async function requestZibalPayment({
   callbackUrl: string;
   mobile?: string;
 }) {
+  const merchantKey = getMerchantKey();
+
   const response = await fetch(`${ZIBAL_BASE_URL}/request`, {
     method: "POST",
     headers: {
@@ -61,6 +66,8 @@ export async function requestZibalPayment({
 }
 
 export async function verifyZibalPayment(trackId: string) {
+  const merchantKey = getMerchantKey();
+
   const response = await fetch(`${ZIBAL_BASE_URL}/verify`, {
     method: "POST",
     headers: {
