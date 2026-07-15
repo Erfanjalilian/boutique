@@ -12,6 +12,8 @@ export type OrderStatus =
 export interface User {
   id: string;
   phone: string;
+  username?: string;
+  passwordHash?: string;
   name: string;
   address: string;
   postalCode: string;

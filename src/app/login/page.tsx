@@ -8,12 +8,17 @@ import { Card } from "@/components/ui/Card";
 
 export default function LoginPage() {
   const router = useRouter();
+  const [mode, setMode] = useState<"password" | "otp">("password");
   const [step, setStep] = useState<"phone" | "otp">("phone");
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [resendTimer, setResendTimer] = useState(0);
+  const [registerMode, setRegisterMode] = useState(false);
 
   // countdown for resend
   useEffect(() => {
@@ -86,6 +91,27 @@ export default function LoginPage() {
     }
   }
 
+  async function handlePasswordSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password, register: registerMode, name }),
+    });
+    const data = await res.json();
+    setLoading(false);
+
+    if (data.success) {
+      router.push(data.data.redirectTo);
+      router.refresh();
+    } else {
+      setError(data.error || "ورود ناموفق بود");
+    }
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-background">
       <div className="absolute inset-0 bg-gradient-to-bl from-primary/10 via-background to-background" />
@@ -93,13 +119,82 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold">خوش آمدید به بوتیک</h1>
           <p className="text-muted text-sm mt-2">
-            {step === "phone"
-              ? "شماره موبایل خود را وارد کنید"
-              : "کد تأیید ارسال‌شده را وارد کنید"}
+            {mode === "password"
+              ? registerMode
+                ? "برای ساخت حساب جدید اطلاعات خود را وارد کنید"
+                : "با نام کاربری و رمز عبور وارد حساب خود شوید"
+              : step === "phone"
+                ? "شماره موبایل خود را وارد کنید"
+                : "کد تأیید ارسال‌شده را وارد کنید"}
           </p>
         </div>
 
-        {step === "phone" ? (
+        <div className="flex rounded-lg border border-border p-1 mb-6">
+          <button
+            type="button"
+            onClick={() => {
+              setMode("password");
+              setError("");
+            }}
+            className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${mode === "password" ? "bg-primary text-primary-foreground" : "text-muted"}`}
+          >
+            ورود با رمز
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setMode("otp");
+              setError("");
+              setStep("phone");
+            }}
+            className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${mode === "otp" ? "bg-primary text-primary-foreground" : "text-muted"}`}
+          >
+            ورود با OTP
+          </button>
+        </div>
+
+        {mode === "password" ? (
+          <form onSubmit={handlePasswordSubmit} className="space-y-4">
+            {registerMode && (
+              <Input
+                label="نام کامل"
+                placeholder="نام و نام خانوادگی"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            )}
+            <Input
+              label="نام کاربری"
+              placeholder="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+            <Input
+              label="رمز عبور"
+              placeholder="********"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            {error && <p className="text-red-400 text-sm">{error}</p>}
+            <Button type="submit" className="w-full" loading={loading}>
+              {registerMode ? "ساخت حساب کاربری" : "ورود"}
+            </Button>
+            <button
+              type="button"
+              onClick={() => {
+                setRegisterMode((v) => !v);
+                setError("");
+              }}
+              className="w-full text-sm text-muted hover:text-primary transition-colors"
+            >
+              {registerMode ? "قبلاً حساب دارم" : "حساب کاربری جدید بساز"}
+            </button>
+          </form>
+        ) : step === "phone" ? (
           <form onSubmit={handleSendOtp} className="space-y-4">
             <Input
               label="شماره موبایل"
