@@ -6,6 +6,8 @@ export const orderStatusLabels: Record<OrderStatus, string> = {
   Shipped: "ارسال‌شده",
   Delivered: "تحویل‌شده",
   Cancelled: "لغوشده",
+  Paid: "پرداخت‌شده",
+  Failed: "پرداخت ناموفق",
 };
 
 export function getOrderStatusLabel(status: OrderStatus | string): string {

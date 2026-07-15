@@ -6,9 +6,22 @@
   "logo": "/Image/logo.svg",
   "footerText": "© ۱۴۰۴ بوتیک. تمامی حقوق محفوظ است. مد و زیبایی برای سبک زندگی مدرن.",
   "footerLinks": [
-    { "label": "درباره ما", "href": "/about" },
-    { "label": "تماس با ما", "href": "/contact" },
-    { "label": "حریم خصوصی", "href": "/privacy" },
-    { "label": "قوانین و مقررات", "href": "/terms" }
-  ]
+    {
+      "label": "درباره ما",
+      "href": "/about"
+    },
+    {
+      "label": "تماس با ما",
+      "href": "/contact"
+    },
+    {
+      "label": "حریم خصوصی",
+      "href": "/privacy"
+    },
+    {
+      "label": "قوانین و مقررات",
+      "href": "/terms"
+    }
+  ],
+  "zibalMerchant": "6a4f661b836ad73eba0f3cd3"
 }

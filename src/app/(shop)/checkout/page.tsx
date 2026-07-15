@@ -61,14 +61,16 @@ export default function CheckoutPage() {
 
     if (data.success) {
       clearCart();
-      router.push(`/order-success?id=${data.data.id}`);
-    } else {
-      if (res.status === 401) {
-        router.push("/login");
-      } else {
-        setError(data.error || "ثبت سفارش با خطا مواجه شد");
-      }
+      window.location.assign(data.data.redirectUrl);
+      return;
     }
+
+    if (res.status === 401) {
+      router.push("/login");
+      return;
+    }
+
+    setError(data.error || "ثبت سفارش با خطا مواجه شد");
   }
 
   if (items.length === 0) return null;

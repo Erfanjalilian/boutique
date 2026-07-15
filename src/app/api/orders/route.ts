@@ -8,14 +8,13 @@ import {
 } from "@/lib/repositories";
 import { generateId } from "@/utils/helpers";
 import { apiSuccess, apiError } from "@/utils/api";
+import { requestZibalPayment } from "@/services/zibal";
 
 const orderItemSchema = z.object({
   productId: z.string(),
   name: z.string(),
   price: z.number(),
   image: z.string(),
-  size: z.string(),
-  color: z.string(),
   quantity: z.number().min(1),
 });
 
@@ -79,6 +78,46 @@ export async function POST(request: Request) {
     orders.push(order);
     await saveOrders(orders);
 
+    const baseUrl =
+      process.env.APP_URL ||
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+    const callbackUrl = new URL("/api/orders/callback", baseUrl).toString();
+
+    let zibalResult;
+    try {
+      zibalResult = await requestZibalPayment({
+        amount: total,
+        callbackUrl,
+        mobile: phone,
+      });
+    } catch (error) {
+      console.error("Zibal payment request failed:", error);
+      const idx = orders.findIndex((o) => o.id === order.id);
+      if (idx !== -1) {
+        orders[idx] = {
+          ...orders[idx],
+          status: "Failed",
+          paymentMessage:
+            error instanceof Error ? error.message : "خطای نامعلوم در درگاه پرداخت",
+          paymentDate: new Date().toISOString(),
+        };
+        await saveOrders(orders);
+      }
+      return apiError(
+        "درخواست درگاه پرداخت انجام نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
+        502
+      );
+    }
+
+    const idx = orders.findIndex((o) => o.id === order.id);
+    if (idx !== -1) {
+      orders[idx] = {
+        ...orders[idx],
+        paymentTrackId: zibalResult.trackId,
+      };
+      await saveOrders(orders);
+    }
+
     const user = await getUserById(session.userId);
     if (user && !user.name) {
       const { getUsers, saveUsers } = await import("@/lib/repositories");
@@ -90,8 +129,15 @@ export async function POST(request: Request) {
       }
     }
 
-    return apiSuccess(order, 201);
-  } catch {
+    return apiSuccess(
+      {
+        orderId: order.id,
+        redirectUrl: `https://gateway.zibal.ir/start/${zibalResult.trackId}`,
+      },
+      201
+    );
+  } catch (error) {
+    console.error("Order creation failed:", error);
     return apiError("Internal server error", 500);
   }
 }

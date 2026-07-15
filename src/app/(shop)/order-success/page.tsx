@@ -73,6 +73,16 @@ function OrderSuccessContent() {
             </div>
           ))}
         </div>
+        {order.paymentReferenceId || order.paymentDate ? (
+          <div className="mt-4 text-sm text-muted space-y-2">
+            {order.paymentReferenceId ? (
+              <p>شناسه پیگیری پرداخت: {order.paymentReferenceId}</p>
+            ) : null}
+            {order.paymentDate ? (
+              <p>تاریخ پرداخت: {formatDate(order.paymentDate)}</p>
+            ) : null}
+          </div>
+        ) : null}
       </Card>
 
       <div className="flex gap-4 justify-center">

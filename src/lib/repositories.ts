@@ -57,6 +57,11 @@ export async function getOrderById(id: string): Promise<Order | undefined> {
   return orders.find((o) => o.id === id);
 }
 
+export async function getOrderByTrackId(trackId: string): Promise<Order | undefined> {
+  const orders = await getOrders();
+  return orders.find((o) => o.paymentTrackId === trackId);
+}
+
 export async function getOrdersByUserId(userId: string): Promise<Order[]> {
   const orders = await getOrders();
   return orders.filter((o) => o.userId === userId);

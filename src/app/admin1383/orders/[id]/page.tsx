@@ -10,6 +10,8 @@ const statusColors = {
   Shipped: "bg-purple-500/10 text-purple-500 border-purple-500/20",
   Delivered: "bg-green-500/10 text-green-500 border-green-500/20",
   Cancelled: "bg-red-500/10 text-red-500 border-red-500/20",
+  Paid: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+  Failed: "bg-red-500/10 text-red-500 border-red-500/20",
 };
 
 const statusTranslations = {
@@ -18,6 +20,8 @@ const statusTranslations = {
   Shipped: "ارسال شده",
   Delivered: "تحویل داده شده",
   Cancelled: "لغو شده",
+  Paid: "پرداخت شده",
+  Failed: "پرداخت ناموفق",
 };
 
 export default async function AdminOrderDetailPage({

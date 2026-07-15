@@ -7,6 +7,8 @@ const statusColors: Record<string, string> = {
   Shipped: "bg-purple-500/20 text-purple-400 border-purple-500/30",
   Delivered: "bg-green-500/20 text-green-400 border-green-500/30",
   Cancelled: "bg-red-500/20 text-red-400 border-red-500/30",
+  Paid: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+  Failed: "bg-red-500/20 text-red-500 border-red-500/30",
 };
 
 export function Badge({

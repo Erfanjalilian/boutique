@@ -13,6 +13,8 @@ const statuses: OrderStatus[] = [
   "Processing",
   "Shipped",
   "Delivered",
+  "Paid",
+  "Failed",
   "Cancelled",
 ];
 

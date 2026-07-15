@@ -9,6 +9,8 @@ const statusSchema = z.object({
     "Shipped",
     "Delivered",
     "Cancelled",
+    "Paid",
+    "Failed",
   ]),
 });
 

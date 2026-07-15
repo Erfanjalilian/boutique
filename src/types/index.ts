@@ -5,7 +5,9 @@ export type OrderStatus =
   | "Processing"
   | "Shipped"
   | "Delivered"
-  | "Cancelled";
+  | "Cancelled"
+  | "Paid"
+  | "Failed";
 
 export interface User {
   id: string;
@@ -82,6 +84,11 @@ export interface Order {
   address: string;
   postalCode: string;
   notes: string;
+  paymentTrackId?: string;
+  paymentReferenceId?: string;
+  paymentCardNumber?: string;
+  paymentMessage?: string;
+  paymentDate?: string;
   createdAt: string;
 }
 
