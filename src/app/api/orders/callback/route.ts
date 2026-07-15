@@ -1,12 +1,26 @@
 import { getOrderByTrackId, getOrders, saveOrders } from "@/lib/repositories";
-import { verifyZibalPayment } from "@/services/zibal";
+import { verifyZibalPayment, ZibalApiError } from "@/services/zibal";
 import { apiError, apiSuccess } from "@/utils/api";
+
+function isCancellationLike(value?: string | null): boolean {
+  const normalized = value?.toLowerCase();
+  return ["0", "false", "cancelled", "canceled", "failed", "2"].includes(normalized || "");
+}
+
+function getRedirectUrl(orderId: string) {
+  return new URL(
+    `/order-success?id=${orderId}`,
+    process.env.APP_URL || "http://localhost:3000"
+  );
+}
 
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
     const trackId = url.searchParams.get("trackId");
-    const resultParam = url.searchParams.get("result")?.toLowerCase();
+    const successParam = url.searchParams.get("success");
+    const statusParam = url.searchParams.get("status");
+    const orderIdParam = url.searchParams.get("orderId");
 
     if (!trackId) {
       return apiError("پارامتر trackId ارسال نشده است", 400);
@@ -15,6 +29,10 @@ export async function GET(request: Request) {
     const order = await getOrderByTrackId(trackId);
     if (!order) {
       return apiError("سفارش مرتبط با این تراکنش یافت نشد", 404);
+    }
+
+    if (orderIdParam && order.id !== orderIdParam) {
+      return apiError("شناسه سفارش callback معتبر نیست", 400);
     }
 
     const orders = await getOrders();
@@ -31,89 +49,76 @@ export async function GET(request: Request) {
       return apiSuccess({ message: "این سفارش قبلاً لغو شده است" });
     }
 
-    if (resultParam === "cancelled" || resultParam === "canceled") {
+    if (isCancellationLike(successParam) || isCancellationLike(statusParam)) {
       orders[idx] = {
         ...orders[idx],
-        status: "Cancelled",
-        paymentMessage: "کاربر پرداخت را لغو کرد",
+        status: statusParam?.toLowerCase() === "cancelled" || statusParam?.toLowerCase() === "canceled" ? "Cancelled" : "Failed",
+        paymentMessage: "پرداخت لغو یا ناموفق شد",
         paymentDate: new Date().toISOString(),
       };
       await saveOrders(orders);
-      const redirectUrl = new URL(
-        `/order-success?id=${orders[idx].id}`,
-        process.env.APP_URL || "http://localhost:3000"
-      );
       return new Response(null, {
         status: 302,
-        headers: { Location: redirectUrl.toString() },
+        headers: { Location: getRedirectUrl(orders[idx].id).toString() },
       });
     }
 
-    const verifyResult = await verifyZibalPayment(trackId);
+    try {
+      const verifyResult = await verifyZibalPayment(trackId);
 
-    if (!verifyResult.success) {
+      if (
+        typeof verifyResult.amount === "number" &&
+        verifyResult.amount !== orders[idx].total
+      ) {
+        orders[idx] = {
+          ...orders[idx],
+          status: "Failed",
+          paymentMessage: `مبلغ تایید شده با مبلغ سفارش مطابقت ندارد: ${verifyResult.amount}`,
+          paymentReferenceId: verifyResult.referenceNumber,
+          paymentAmount: verifyResult.amount,
+          paymentCardNumber: verifyResult.cardNumber,
+          paymentDate: new Date().toISOString(),
+        };
+        await saveOrders(orders);
+        return new Response(null, {
+          status: 302,
+          headers: { Location: getRedirectUrl(orders[idx].id).toString() },
+        });
+      }
+
       orders[idx] = {
         ...orders[idx],
-        status: "Failed",
+        status: "Paid",
+        paymentReferenceId: verifyResult.referenceNumber,
+        paymentAmount: verifyResult.amount,
+        paymentCardNumber: verifyResult.cardNumber,
         paymentMessage: verifyResult.message,
-        paymentReferenceId: verifyResult.referenceId,
-        paymentCardNumber: verifyResult.cardNumber,
         paymentDate: new Date().toISOString(),
       };
+
       await saveOrders(orders);
-      const redirectUrl = new URL(
-        `/order-success?id=${orders[idx].id}`,
-        process.env.APP_URL || "http://localhost:3000"
-      );
+
       return new Response(null, {
         status: 302,
-        headers: { Location: redirectUrl.toString() },
+        headers: { Location: getRedirectUrl(orders[idx].id).toString() },
       });
-    }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "خطا در تأیید پرداخت";
+      const code = error instanceof ZibalApiError ? error.code : undefined;
 
-    if (
-      typeof verifyResult.amount === "number" &&
-      verifyResult.amount !== orders[idx].total
-    ) {
       orders[idx] = {
         ...orders[idx],
-        status: "Failed",
-        paymentMessage: `مبلغ تایید شده با مبلغ سفارش مطابقت ندارد: ${verifyResult.amount}`,
-        paymentReferenceId: verifyResult.referenceId,
-        paymentCardNumber: verifyResult.cardNumber,
+        status: code === 203 ? "Paid" : "Failed",
+        paymentMessage: code === 203 ? "تراکنش قبلاً تأیید شده است" : message,
         paymentDate: new Date().toISOString(),
       };
       await saveOrders(orders);
-      const redirectUrl = new URL(
-        `/order-success?id=${orders[idx].id}`,
-        process.env.APP_URL || "http://localhost:3000"
-      );
+
       return new Response(null, {
         status: 302,
-        headers: { Location: redirectUrl.toString() },
+        headers: { Location: getRedirectUrl(orders[idx].id).toString() },
       });
     }
-
-    orders[idx] = {
-      ...orders[idx],
-      status: "Paid",
-      paymentReferenceId: verifyResult.referenceId,
-      paymentCardNumber: verifyResult.cardNumber,
-      paymentMessage: verifyResult.message,
-      paymentDate: new Date().toISOString(),
-    };
-
-    await saveOrders(orders);
-
-    const redirectUrl = new URL(
-      `/order-success?id=${orders[idx].id}`,
-      process.env.APP_URL || "http://localhost:3000"
-    );
-
-    return new Response(null, {
-      status: 302,
-      headers: { Location: redirectUrl.toString() },
-    });
   } catch (error) {
     console.error("Zibal callback handling failed:", error);
     return apiError("خطا در پردازش بازگشت پرداخت", 500);

@@ -88,6 +88,8 @@ export async function POST(request: Request) {
       zibalResult = await requestZibalPayment({
         amount: total,
         callbackUrl,
+        description: `سفارش ${order.id}`,
+        orderId: order.id,
         mobile: phone,
       });
     } catch (error) {

@@ -88,6 +88,7 @@ export interface Order {
   notes: string;
   paymentTrackId?: string;
   paymentReferenceId?: string;
+  paymentAmount?: number;
   paymentCardNumber?: string;
   paymentMessage?: string;
   paymentDate?: string;
