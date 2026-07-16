@@ -11,10 +11,7 @@ export async function GET(request: NextRequest) {
       (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
     
-    return apiSuccess({
-      orders: sortedOrders,
-      total: sortedOrders.length,
-    });
+    return apiSuccess(sortedOrders);
   } catch (error) {
     console.error("Error fetching orders:", error);
     return apiError("Internal server error", 500);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
@@ -21,6 +21,7 @@ export function ProductForm({ product, categories, sizes, colors }: ProductFormP
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [categoryOptions, setCategoryOptions] = useState<Category[]>(categories);
   const [imageUrlInput, setImageUrlInput] = useState("");
   const [imageUrlError, setImageUrlError] = useState("");
   const [newCategoryName, setNewCategoryName] = useState("");
@@ -39,6 +40,33 @@ export function ProductForm({ product, categories, sizes, colors }: ProductFormP
     newArrival: product?.newArrival || false,
     stock: product?.stock?.toString() || "0",
   });
+
+  useEffect(() => {
+    setCategoryOptions(categories);
+  }, [categories]);
+
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const res = await fetch("/api/admin/categories");
+        const payload = await res.json();
+        const data = Array.isArray(payload) ? payload : payload?.data ?? [];
+        if (Array.isArray(data)) {
+          setCategoryOptions(data);
+        }
+      } catch {
+        setCategoryOptions(categories);
+      }
+    }
+
+    loadCategories();
+  }, [categories]);
+
+  useEffect(() => {
+    if (!form.categoryId && categoryOptions.length > 0) {
+      setForm((f) => ({ ...f, categoryId: f.categoryId || categoryOptions[0].id }));
+    }
+  }, [categoryOptions, form.categoryId]);
 
   function toggleArrayItem(field: "sizes" | "colors", id: string) {
     setForm((f) => ({
@@ -82,9 +110,10 @@ export function ProductForm({ product, categories, sizes, colors }: ProductFormP
     setNewCategoryLoading(false);
 
     if (data.success) {
+      const newCategory = data.data;
       setNewCategoryName("");
-      setForm((f) => ({ ...f, categoryId: data.data.id }));
-      window.location.reload();
+      setCategoryOptions((prev) => [...prev, newCategory]);
+      setForm((f) => ({ ...f, categoryId: newCategory.id }));
     }
   }
 
@@ -173,7 +202,7 @@ export function ProductForm({ product, categories, sizes, colors }: ProductFormP
           label="دسته‌بندی"
           value={form.categoryId}
           onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
-          options={categories.map((c) => ({ value: c.id, label: c.name }))}
+          options={categoryOptions.map((c) => ({ value: c.id, label: c.name }))}
         />
         <div className="rounded-xl border border-dashed border-border p-4 space-y-2">
           <label className="block text-sm font-medium text-muted">افزودن دسته‌بندی جدید</label>

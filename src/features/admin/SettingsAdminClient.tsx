@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { ImageUpload } from "@/components/admin/ImageUpload";
 import type { SiteSettings } from "@/types";
 
 export function SettingsAdminClient({
@@ -64,24 +63,44 @@ export function SettingsAdminClient({
 
         <Card className="p-6 space-y-4">
           <h2 className="font-semibold">لوگو و فاویکون</h2>
-          <div>
-            <p className="text-sm font-medium text-muted mb-2">لوگو</p>
-            <ImageUpload
-              images={form.logo ? [form.logo] : []}
-              onChange={(imgs) => setForm({ ...form, logo: imgs[0] || "" })}
-              multiple={false}
-              prefix="logo"
-            />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-muted mb-2">فاویکون</p>
-            <ImageUpload
-              images={form.favicon ? [form.favicon] : []}
-              onChange={(imgs) => setForm({ ...form, favicon: imgs[0] || "" })}
-              multiple={false}
-              prefix="favicon"
-            />
-          </div>
+          <Input
+            label="لینک لوگو"
+            type="url"
+            placeholder="https://example.com/logo.png"
+            value={form.logo}
+            onChange={(e) => setForm({ ...form, logo: e.target.value })}
+          />
+          {form.logo && (
+            <div className="flex items-center gap-4">
+              <p className="text-sm text-muted">پیش‌نمایش:</p>
+              <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-card border border-border/50">
+                <img
+                  src={form.logo}
+                  alt="لوگو"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            </div>
+          )}
+          <Input
+            label="لینک فاویکون"
+            type="url"
+            placeholder="https://example.com/favicon.ico"
+            value={form.favicon}
+            onChange={(e) => setForm({ ...form, favicon: e.target.value })}
+          />
+          {form.favicon && (
+            <div className="flex items-center gap-4">
+              <p className="text-sm text-muted">پیش‌نمایش فاویکون:</p>
+              <div className="relative w-8 h-8 rounded-lg overflow-hidden bg-card border border-border/50">
+                <img
+                  src={form.favicon}
+                  alt="فاویکون"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            </div>
+          )}
         </Card>
 
         {message && <p className="text-sm text-green-400">{message}</p>}
