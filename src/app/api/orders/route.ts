@@ -92,6 +92,10 @@ export async function POST(request: Request) {
     await saveOrders(orders);
 
     const callbackUrl = new URL("/api/orders/callback", getBaseUrl()).toString();
+    console.log("================================");
+console.log("APP_URL =", process.env.APP_URL);
+console.log("CALLBACK URL =", callbackUrl);
+console.log("================================");
 
     let zibalResult;
 try {
