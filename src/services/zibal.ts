@@ -144,6 +144,10 @@ export async function requestZibalPayment({
   });
 
   try {
+        console.log("========== CALLBACK DEBUG ==========");
+console.log("callbackUrl =", callbackUrl);
+console.log("merchant =", merchantKey);
+console.log("====================================");
     const response = await fetch(ZIBAL_REQUEST_URL, {
       method: "POST",
       headers: {
@@ -159,6 +163,7 @@ export async function requestZibalPayment({
         mobile,
       }),
     });
+
 
     console.log("[Zibal][request] status", response.status);
     const data = (await parseJsonResponse(response)) as ZibalRequestResponse;
