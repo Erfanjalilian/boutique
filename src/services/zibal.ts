@@ -1,4 +1,8 @@
+import { getSettings } from "@/lib/repositories";
+
 const ZIBAL_BASE_URL = "https://gateway.zibal.ir/v1";
+const ZIBAL_REQUEST_URL = `${ZIBAL_BASE_URL}/request`;
+const ZIBAL_VERIFY_URL = `${ZIBAL_BASE_URL}/verify`;
 
 export class ZibalApiError extends Error {
   constructor(
@@ -11,12 +15,34 @@ export class ZibalApiError extends Error {
   }
 }
 
-function getMerchantKey() {
+async function getMerchantKey(): Promise<string> {
   const merchantKey = process.env.ZIBAL_MERCHANT?.trim();
-  if (!merchantKey) {
-    throw new Error("Missing ZIBAL_MERCHANT environment variable");
+  console.log("[Zibal] Merchant lookup", {
+    source: "env",
+    hasMerchant: Boolean(merchantKey),
+    length: merchantKey?.length || 0,
+  });
+
+  if (merchantKey) {
+    return merchantKey;
   }
-  return merchantKey;
+
+  const settings = await getSettings();
+  const settingsMerchant = settings.zibalMerchant?.trim();
+
+  console.log("[Zibal] Merchant lookup", {
+    source: "settings",
+    hasMerchant: Boolean(settingsMerchant),
+    length: settingsMerchant?.length || 0,
+  });
+
+  if (settingsMerchant) {
+    return settingsMerchant;
+  }
+
+  throw new Error(
+    "Merchant برای درگاه زیبال یافت نشد. لطفاً متغیر محیطی ZIBAL_MERCHANT را تنظیم کنید یا فیلد zibalMerchant را در data/settings.json تکمیل کنید."
+  );
 }
 
 function normalizeResultCode(value: unknown): number {
@@ -26,13 +52,21 @@ function normalizeResultCode(value: unknown): number {
 
 function maskCardNumber(cardNumber?: string): string | undefined {
   if (!cardNumber) return undefined;
+
   const cleaned = cardNumber.replace(/\s+/g, "");
+
   if (cleaned.length <= 4) return cleaned;
+
   return `****${cleaned.slice(-4)}`;
 }
 
-function getZibalErrorMessage(code: number, fallback: string, detail?: string): string {
+function getZibalErrorMessage(
+  code: number,
+  fallback: string,
+  detail?: string
+): string {
   const messages: Record<number, string> = {
+    100: "تراکنش با موفقیت انجام شد.",
     102: "شناسه پذیرنده زیبال نامعتبر است.",
     103: "پذیرنده زیبال غیرفعال است.",
     104: "مبلغ درخواستی نامعتبر است.",
@@ -42,10 +76,11 @@ function getZibalErrorMessage(code: number, fallback: string, detail?: string): 
     201: "تراکنش یافت نشد.",
     202: "تراکنش ناموفق یا لغو شده است.",
     203: "تراکنش قبلاً تأیید شده است.",
+    204: "تراکنش قبلاً لغو شده است.",
   };
 
   const mapped = messages[code] || fallback;
-  return detail ? `${mapped} ${detail}`.trim() : mapped;
+  return detail ? `${mapped} (${detail})`.trim() : mapped;
 }
 
 type ZibalRequestResponse = {
@@ -66,6 +101,23 @@ type ZibalVerifyResponse = {
   status?: number | string;
 };
 
+async function parseJsonResponse(response: Response): Promise<unknown> {
+  const rawText = await response.text();
+  if (!rawText) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(rawText) as unknown;
+  } catch (error) {
+    console.error("[Zibal] Failed to parse response body", {
+      rawText,
+      error,
+    });
+    return {};
+  }
+}
+
 export async function requestZibalPayment({
   amount,
   callbackUrl,
@@ -79,94 +131,170 @@ export async function requestZibalPayment({
   orderId?: string;
   mobile?: string;
 }) {
-  const merchantKey = getMerchantKey();
+  const merchantKey = await getMerchantKey();
 
-  const response = await fetch(`${ZIBAL_BASE_URL}/request`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    body: JSON.stringify({
-      merchant: merchantKey,
-      amount,
-      callbackUrl,
-      description,
-      orderId,
-      mobile,
-    }),
+  console.log("========== ZIBAL REQUEST START ==========");
+  console.log("[Zibal][request] payload", {
+    merchant: merchantKey,
+    amount,
+    callbackUrl,
+    description,
+    orderId,
+    mobile,
   });
 
-  const data = (await response.json()) as ZibalRequestResponse;
-  const resultCode = normalizeResultCode(data.result);
+  try {
+        console.log("========== CALLBACK DEBUG ==========");
+console.log("callbackUrl =", callbackUrl);
+console.log("merchant =", merchantKey);
+console.log("====================================");
+    const response = await fetch(ZIBAL_REQUEST_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        merchant: merchantKey,
+        amount,
+        callbackUrl,
+        description,
+        orderId,
+        mobile,
+      }),
+    });
 
-  console.log("[Zibal][request]", {
-    status: response.status,
-    result: resultCode,
-    trackId: data.trackId,
-    message: data.message,
-  });
 
-  if (resultCode === 100) {
-    if (!data.trackId) {
-      throw new ZibalApiError("trackId از پاسخ زیبال دریافت نشد", resultCode, resultCode);
+    console.log("[Zibal][request] status", response.status);
+    const data = (await parseJsonResponse(response)) as ZibalRequestResponse;
+    console.log("[Zibal][request] raw response", data);
+
+    const resultCode = normalizeResultCode(data.result);
+    console.log("[Zibal][request] result", {
+      status: response.status,
+      result: resultCode,
+      trackId: data.trackId,
+      message: data.message,
+    });
+
+    if (resultCode === 100) {
+      if (!data.trackId) {
+        throw new ZibalApiError(
+          "trackId از پاسخ زیبال دریافت نشد",
+          resultCode,
+          resultCode
+        );
+      }
+
+      console.log("========== ZIBAL REQUEST END ==========");
+      return {
+        trackId: data.trackId,
+        message: data.message || "",
+        result: resultCode,
+        raw: data,
+      };
     }
 
-    return {
-      trackId: data.trackId,
-      message: data.message || "",
-      result: resultCode,
-      raw: data,
-    };
-  }
+    const errorMessage = getZibalErrorMessage(
+      resultCode,
+      "درخواست درگاه پرداخت با خطا مواجه شد",
+      data.message
+    );
 
-  throw new ZibalApiError(
-    getZibalErrorMessage(resultCode, "درخواست درگاه پرداخت با خطا مواجه شد", data.message),
-    resultCode,
-    resultCode
-  );
+    console.error("[Zibal][request] failed", {
+      resultCode,
+      message: errorMessage,
+      raw: data,
+    });
+
+    throw new ZibalApiError(errorMessage, resultCode, resultCode);
+  } catch (error) {
+    if (error instanceof ZibalApiError) {
+      throw error;
+    }
+
+    console.error("[Zibal][request] exception", error);
+    throw new ZibalApiError(
+      error instanceof Error
+        ? error.message
+        : "ارتباط با درگاه زیبال برقرار نشد. لطفاً دوباره تلاش کنید.",
+      0,
+      0
+    );
+  }
 }
 
 export async function verifyZibalPayment(trackId: string) {
-  const merchantKey = getMerchantKey();
+  const merchantKey = await getMerchantKey();
 
-  const response = await fetch(`${ZIBAL_BASE_URL}/verify`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    body: JSON.stringify({
-      merchant: merchantKey,
-      trackId,
-    }),
-  });
-
-  const data = (await response.json()) as ZibalVerifyResponse;
-  const resultCode = normalizeResultCode(data.result);
-
-  console.log("[Zibal][verify]", {
-    status: response.status,
+  console.log("========== ZIBAL VERIFY START ==========");
+  console.log("[Zibal][verify] payload", {
+    merchant: merchantKey,
     trackId,
-    result: resultCode,
-    message: data.message,
   });
 
-  if (resultCode === 100) {
-    return {
-      success: true,
-      result: resultCode,
-      amount: data.amount,
-      referenceNumber: data.refNumber || data.referenceNumber,
-      cardNumber: maskCardNumber(data.cardNumber),
-      message: data.message || "",
-      raw: data,
-    };
-  }
+  try {
+    const response = await fetch(ZIBAL_VERIFY_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        merchant: merchantKey,
+        trackId,
+      }),
+    });
 
-  throw new ZibalApiError(
-    getZibalErrorMessage(resultCode, "تأیید تراکنش ناموفق بود", data.message),
-    resultCode,
-    resultCode
-  );
+    console.log("[Zibal][verify] status", response.status);
+    const data = (await parseJsonResponse(response)) as ZibalVerifyResponse;
+    console.log("[Zibal][verify] raw response", data);
+
+    const resultCode = normalizeResultCode(data.result);
+    console.log("[Zibal][verify] result", {
+      status: response.status,
+      result: resultCode,
+      message: data.message,
+    });
+
+    if (resultCode === 100) {
+      console.log("========== ZIBAL VERIFY END ==========");
+      return {
+        success: true,
+        result: resultCode,
+        amount: data.amount,
+        referenceNumber: data.refNumber || data.referenceNumber,
+        cardNumber: maskCardNumber(data.cardNumber),
+        message: data.message || "",
+        raw: data,
+      };
+    }
+
+    const errorMessage = getZibalErrorMessage(
+      resultCode,
+      "تأیید تراکنش ناموفق بود",
+      data.message
+    );
+
+    console.error("[Zibal][verify] failed", {
+      resultCode,
+      message: errorMessage,
+      raw: data,
+    });
+
+    throw new ZibalApiError(errorMessage, resultCode, resultCode);
+  } catch (error) {
+    if (error instanceof ZibalApiError) {
+      throw error;
+    }
+
+    console.error("[Zibal][verify] exception", error);
+    throw new ZibalApiError(
+      error instanceof Error
+        ? error.message
+        : "تأیید تراکنش با خطا مواجه شد.",
+      0,
+      0
+    );
+  }
 }
