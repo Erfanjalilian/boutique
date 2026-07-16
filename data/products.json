@@ -1,107 +1,92 @@
 [
   {
-    "id": "prod-001",
-    "name": "دستبند چرمی مردانه",
-    "description": "دستبند چرمی اصل با قفل استیل ضد حساسیت، مناسب برای استفاده روزمره و مهمانی",
-    "price": 890000,
+    "id": "995986e4-c71c-4a02-b91f-3d77ae5ba9b8",
+    "name": "ساعت مچی زنانه",
+    "description": "ساعت مچی مردانه \nموتور کوارتز  با کیفیت \n\nبند نقره‌ای   با چفت قفلی کاور دار  ایمن \nارسال طبق تصویر \nصفحه  آبی اقیانوسی \nقوی :muscle: سبک و راحت برای تمام روز \n\nست تمام :heavy_check_mark: استایل اسپورت و رسمی \n\n\n\n\nبا پست :mailbox_with_mail: پیشتاز و بيمه \nهمه روزه به سراسر کشور",
+    "price": 500000,
+    "discountPercent": 0,
     "images": [
-      "/Image/placeholder-product.svg"
+      "https://i.postimg.cc/26YYdLvY/IMG-20260713-160509-156.jpg"
     ],
     "categoryId": "cat-002",
-    "featured": true,
+    "sizes": [],
+    "colors": [],
+    "featured": false,
     "bestSeller": true,
-    "newArrival": false,
-    "stock": 50,
-    "createdAt": "2025-01-15T00:00:00.000Z"
-  },
-  {
-    "id": "prod-002",
-    "name": "انگشتر نقره مردانه",
-    "description": "انگشتر نقره 925 عیار با حکاکی اختصاصی و طراحی مدرن",
-    "price": 2490000,
-    "images": [
-      "/Image/placeholder-product.svg"
-    ],
-    "categoryId": "cat-003",
-    "featured": true,
-    "bestSeller": true,
-    "newArrival": false,
-    "stock": 35,
-    "createdAt": "2025-01-20T00:00:00.000Z"
-  },
-  {
-    "id": "prod-003",
-    "name": "پلاک نام استیل",
-    "description": "پلاک نام استیل با قابلیت حک اسم دلخواه، هدیه ای ماندگار و خاص",
-    "price": 389000,
-    "images": [
-      "/Image/placeholder-product.svg"
-    ],
-    "categoryId": "cat-005",
-    "featured": true,
-    "bestSeller": false,
     "newArrival": true,
-    "stock": 20,
-    "createdAt": "2025-03-01T00:00:00.000Z"
+    "stock": 4,
+    "createdAt": "2026-07-13T12:47:17.713Z"
   },
   {
-    "id": "prod-004",
-    "name": "پابند طلایی زنانه",
-    "description": "پابند ظریف و شیک با روکش طلا، مناسب برای موقعیت های خاص",
-    "price": 1890000,
+    "id": "51aa4864-0bc6-4733-9d90-7f4f6baa4aba",
+    "name": "ساعت مچی مردانه  برند رولکس",
+    "description": "ساعت مچی مردانه  برند رولکس     :watch: \nسری خلبانی    ساب مارینر         :airplane: :man::airplane: \nدارای تاچیمتر  چرخان  دورنگ سرخ آتشی مسی مشکی \n\nشیشه کریستال نشکن      :hammer:  \n\nشيشه تلسکوپ روی تاریخ :date: شمار \n\nتوجه:  آرم رولکس  روی کوک ساعت  :crown: \n             آرم  رولکس روی قفل ساعت  :crown: \n             آرم  رولکس  روی درب استیل  :crown: \n\nکیفیت  :  گرید A+ \nبدنه ضد آب     //    بند و قاب  ضد حساسیت \n\nبند دورنگ نقره ای طلایی  \nو \nزمینه  صفحه مشکی  که در نور آفتاب و سایه تغییر میکنه و به حالت سورمه ای و مشکی تغییر رنگ میکنه \nکوک طلایی با تاج :crown: رولکس بصورت برجسته \n\nزیبایی  تکنولوژی ساعت مچی  سوئیس  \nموتور تحت لیسانس سوئیس  SWISS MADE \nقفل فشاری دوطرف ایمن \n\n\n\nارسال با پست :mailbox_with_mail: پیشتاز و بيمه \nهمه روزه از شیراز به سراسر کشور",
+    "price": 700000,
+    "discountPercent": 0,
     "images": [
-      "/Image/placeholder-product.svg"
+      "https://i.postimg.cc/Vsn8GR40/IMG-20260713-162750-134.jpg"
     ],
-    "categoryId": "cat-004",
-    "featured": true,
+    "categoryId": "cat-001",
+    "sizes": [],
+    "colors": [],
+    "featured": false,
     "bestSeller": true,
-    "newArrival": false,
-    "stock": 15,
-    "createdAt": "2025-02-10T00:00:00.000Z"
+    "newArrival": true,
+    "stock": 8,
+    "createdAt": "2026-07-13T13:00:29.514Z"
   },
   {
-    "id": "prod-005",
-    "name": "پاندول ساعتی نقره",
-    "description": "آویز ساعتی زیبا با زنجیر نقره، ترکیبی از ساعت و جواهر",
+    "id": "5493a63d-4a9a-4c1b-92e2-d63a360b0dc0",
+    "name": "ساعت مردانه هابلوت طرح کرنوگراف",
+    "description": "مردانه مگنتی برند هابلوت HOBLOT \n\nباکیفیت \nبند سیلیکونی \nطراحی خاص و زیبا\nموتور کوارتز\nقفل کلیپسی مگنیتیک  \nدارای روز شمار \nطرح سه موتوره کرنوگراف \nتک موتوره با تغذیه باطری \n\n﻿🔥 یک هدیه 🎁 زیبا  در جعبه کادویی پاپیونی \n\n\n🔸 ارسال با پست 📬 پیشتاز و بيمه \n✅ همه روزه به سراسر کشور ",
     "price": 990000,
+    "discountPercent": 0,
     "images": [
-      "/Image/placeholder-product.svg"
+      "https://i.postimg.cc/rpjfZN9D/Zpofv-X0MQ61x8i-XPq-KDk-FT8r2PGN6Ar-K3l-PSPSim-Bu6F8qp-Me5-jpg-800X800X70.webp"
     ],
-    "categoryId": "cat-006",
-    "featured": false,
-    "bestSeller": false,
-    "newArrival": true,
-    "stock": 40,
-    "createdAt": "2025-03-15T00:00:00.000Z"
-  },
-  {
-    "id": "prod-006",
-    "name": "دستبند سنگی مردانه",
-    "description": "دستبند با سنگ های طبیعی و مغناطیس، مناسب برای کاهش استرس و انرژی مثبت",
-    "price": 790000,
-    "images": [
-      "/Image/placeholder-product.svg"
-    ],
-    "categoryId": "cat-002",
-    "featured": false,
+    "categoryId": "cat-001",
+    "sizes": [],
+    "colors": [],
+    "featured": true,
     "bestSeller": true,
     "newArrival": true,
-    "stock": 45,
-    "createdAt": "2025-03-20T00:00:00.000Z"
+    "stock": 12,
+    "createdAt": "2026-07-14T11:54:58.118Z"
   },
   {
-    "id": "prod-007",
-    "name": "انگشتر نامزدی",
-    "description": "انگشتر نامزدی با نگین الماس و طراحی کلاسیک",
-    "price": 4990000,
+    "id": "d31adbaa-b04d-44cc-a57c-3ff48a1b2bd6",
+    "name": "ساعت بنگل مربعی عدد یونانی",
+    "description": "ساعت بنگل دستبند زنانه   ⌚️ \n\nبند قابل تنظیم و استفاده راحت برای هر سایز دست\n\nمینیمال  ⌚️ \n\nشیک و لاکچری \n\nاعداد یونانی    ⌚️ \n\n\n\nارسال با پست 📬 پیشتاز و بيمه \n\nهمه روزه به سراسر کشور  📪 ",
+    "price": 650000,
+    "discountPercent": 0,
     "images": [
-      "/Image/placeholder-product.svg"
+      "https://i.postimg.cc/MH5Rq9vQ/WHo24y50U6Jxs-Cz-H5y-Lp-Sj-R8q-Ci-WDq6DE5Uh-Wd-Hq0b0n-Lqz55B-jpg-800X800X70.webp"
     ],
-    "categoryId": "cat-003",
+    "categoryId": "cat-001",
+    "sizes": [],
+    "colors": [],
     "featured": false,
     "bestSeller": false,
+    "newArrival": false,
+    "stock": 5,
+    "createdAt": "2026-07-14T11:59:29.452Z"
+  },
+  {
+    "id": "1b850f9f-f528-4f0b-9ec6-a389c0be2795",
+    "name": "جعبه کادویی زنانه به همراه ساعت مچی امگا",
+    "description": "مناسب برای:\n\nهدیه 🎁 روز عشق خاص دختران و زنان\n\nسایر توضیحات:\n\nباکس کادویی زنانه خاص 🎁 با جعبه کامل و ساعت مچی زنانه شیک ضمانت دار\n\nباکس کادویی   زنانه 🎁  بعلاوه  ساعت مچی امگا \n\nجعبه 📦 هدیه 🎁 \n\nشامل  : ساعت مچی  امگا طرح کانسلیشن... باکس کادویی شیک ... پوشال رنگی .. شیشه عشق 💘  .\n\nتوضیح :  ساعت مچی زنانه امگا کانسلیشن  دارای روزشمار  و موتور باکیفیت تحت لیسانس سوئیس دارد و شش ماه ضمانت فنی موتور \n\n\nارسال با پست پیشتاز و بیمه 📪 \n\nهمه روزه به سراسر کشور 📬 ",
+    "price": 1990000,
+    "discountPercent": 0,
+    "images": [
+      "https://i.postimg.cc/yYWWD1Gr/7kysrb-Lx-Edoc-EL4KPANGcyjeb-Y1SKKCi-Nx-Ex-ZLx-FWp-Nlhgk-ZBe-jpg-800X800X70.webp"
+    ],
+    "categoryId": "cat-007",
+    "sizes": [],
+    "colors": [],
+    "featured": true,
+    "bestSeller": false,
     "newArrival": true,
-    "stock": 25,
-    "createdAt": "2025-04-01T00:00:00.000Z"
+    "stock": 50,
+    "createdAt": "2026-07-14T12:01:18.200Z"
   }
 ]
