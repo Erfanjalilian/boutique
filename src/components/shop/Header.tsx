@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useCart } from "@/hooks/useCart";
+import { useAuth } from "@/hooks/useAuth";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
@@ -21,8 +21,10 @@ export function Header({
   logo?: string;
 }) {
   const { totalItems } = useCart();
+  const { user, loading: authLoading, logout } = useAuth();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,6 +32,7 @@ export function Header({
   // Refs for dropdown to manage hover behavior
   const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const dropdownContainerRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   // Fetch categories from the database (API)
   useEffect(() => {
@@ -86,6 +89,25 @@ export function Header({
     }, 150);
   };
 
+  // Close user menu on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  async function handleLogout() {
+    await logout();
+    setUserMenuOpen(false);
+    setMenuOpen(false);
+    router.push("/");
+    router.refresh();
+  }
+
   // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
@@ -94,6 +116,17 @@ export function Header({
       }
     };
   }, []);
+
+  const accountLinks = user
+    ? [
+        ...(user.role === "admin"
+          ? [{ href: "/admin1383", label: "پنل ادمین" }]
+          : []),
+        { href: "/dashboard", label: "داشبورد" },
+        { href: "/dashboard/orders", label: "سفارش‌ها" },
+        { href: "/dashboard/profile", label: "پروفایل" },
+      ]
+    : [];
 
   const links = [
     { href: "/", label: "خانه" },
@@ -109,11 +142,10 @@ export function Header({
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
             <div className="relative w-8 h-8 rounded-lg overflow-hidden bg-card">
-              <Image
+              <img
                 src={logo}
                 alt={websiteName}
-                fill
-                className="object-contain"
+                className="w-full h-full object-contain"
                 onError={(e) => {
                   (e.target as HTMLImageElement).style.display = "none";
                 }}
@@ -172,11 +204,10 @@ export function Header({
                         >
                           {category.image && (
                             <div className="relative w-6 h-6 rounded-md overflow-hidden bg-gray-100">
-                              <Image
+                              <img
                                 src={category.image}
                                 alt={category.name}
-                                fill
-                                className="object-cover"
+                                className="w-full h-full object-cover"
                                 onError={(e) => {
                                   (e.target as HTMLImageElement).style.display = "none";
                                 }}
@@ -221,12 +252,51 @@ export function Header({
                 </span>
               )}
             </Link>
-            <Link
-              href="/login"
-              className="hidden sm:inline-flex text-sm px-4 py-2 rounded-xl bg-primary hover:bg-primary-hover transition-colors"
-            >
-              ورود
-            </Link>
+            {!authLoading && user ? (
+              <div className="relative hidden sm:block" ref={userMenuRef}>
+                <button
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="flex items-center gap-2 text-sm px-4 py-2 rounded-xl bg-card hover:bg-card/80 border border-border/50 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  {user.name || user.phone}
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {userMenuOpen && (
+                  <div className="absolute left-0 top-full mt-1 w-48 bg-background border border-border/50 rounded-2xl shadow-xl py-2 animate-fade-in z-50">
+                    {accountLinks.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className="block px-4 py-2.5 text-sm text-muted hover:text-foreground hover:bg-card transition-colors"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                    <div className="border-t border-border/50 mt-1 pt-1">
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-right px-4 py-2.5 text-sm text-red-400 hover:bg-card transition-colors"
+                      >
+                        خروج
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : !authLoading ? (
+              <Link
+                href="/login"
+                className="hidden sm:inline-flex text-sm px-4 py-2 rounded-xl bg-primary hover:bg-primary-hover transition-colors"
+              >
+                ورود
+              </Link>
+            ) : null}
             <button
               className="md:hidden p-2"
               onClick={() => setMenuOpen(!menuOpen)}
@@ -294,13 +364,37 @@ export function Header({
                 )}
               </div>
             ))}
-            <Link
-              href="/login"
-              className="block py-2 text-primary"
-              onClick={() => setMenuOpen(false)}
-            >
-              ورود
-            </Link>
+            {!authLoading && user ? (
+              <>
+                <div className="py-2 text-muted font-medium border-t border-border/50 mt-2 pt-3">
+                  {user.name || user.phone}
+                </div>
+                {accountLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="block py-2 text-muted hover:text-foreground"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+                <button
+                  onClick={handleLogout}
+                  className="block w-full text-right py-2 text-red-400"
+                >
+                  خروج
+                </button>
+              </>
+            ) : !authLoading ? (
+              <Link
+                href="/login"
+                className="block py-2 text-primary"
+                onClick={() => setMenuOpen(false)}
+              >
+                ورود
+              </Link>
+            ) : null}
           </nav>
         )}
       </div>

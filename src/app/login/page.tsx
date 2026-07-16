@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { user, loading: authLoading, login } = useAuth();
   const [mode, setMode] = useState<"password" | "otp">("password");
   const [step, setStep] = useState<"phone" | "otp">("phone");
   const [phone, setPhone] = useState("");
@@ -19,6 +21,12 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [resendTimer, setResendTimer] = useState(0);
   const [registerMode, setRegisterMode] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.replace(user.role === "admin" ? "/admin1383" : "/dashboard");
+    }
+  }, [authLoading, user, router]);
 
   // countdown for resend
   useEffect(() => {
@@ -84,6 +92,7 @@ export default function LoginPage() {
     setLoading(false);
 
     if (data.success) {
+      login(data.data.user);
       router.push(data.data.redirectTo);
       router.refresh();
     } else {
@@ -105,11 +114,20 @@ export default function LoginPage() {
     setLoading(false);
 
     if (data.success) {
+      login(data.data.user);
       router.push(data.data.redirectTo);
       router.refresh();
     } else {
       setError(data.error || "ورود ناموفق بود");
     }
+  }
+
+  if (authLoading || user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <p className="text-muted">در حال بارگذاری...</p>
+      </div>
+    );
   }
 
   return (
